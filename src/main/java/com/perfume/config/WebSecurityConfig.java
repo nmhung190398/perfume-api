@@ -1,8 +1,8 @@
 package com.perfume.config;
 
-import com.example.springMongoDemo.sercurity.JwtAuthenticationEntryPoint;
-import com.example.springMongoDemo.sercurity.JwtRequestFilter;
-import com.example.springMongoDemo.sercurity.JwtUserDetailsService;
+import com.perfume.sercurity.JwtAuthenticationEntryPoint;
+import com.perfume.sercurity.JwtRequestFilter;
+import com.perfume.sercurity.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

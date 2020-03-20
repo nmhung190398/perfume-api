@@ -2,7 +2,7 @@ package com.perfume.entity;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import javax.persistence.Id;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
