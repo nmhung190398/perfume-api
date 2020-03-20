@@ -1,7 +1,7 @@
 package com.perfume.sercurity;
 
-import com.example.springMongoDemo.entity.User;
-import com.example.springMongoDemo.repository.UserRepository;
+import com.perfume.entity.User;
+import com.perfume.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +22,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         User user = userRepository.findByUsername(username);
         List<SimpleGrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority(user.getRole()));
+        roles.add(new SimpleGrantedAuthority(user.getRoles().stream().toString()));
 
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
