@@ -2,12 +2,9 @@ package com.perfume.entity;
 
 import lombok.Builder;
 import lombok.Data;
-import javax.persistence.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
+
 import java.util.List;
 
 @Data
@@ -15,6 +12,7 @@ import java.util.List;
 @Entity
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
     public String username;
