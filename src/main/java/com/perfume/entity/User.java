@@ -10,11 +10,7 @@ import java.util.List;
 @Data
 @Builder
 @Entity
-public class User {
-    @Id
-    @GeneratedValue
-    public Long id;
-
+public class User extends BaseEntity {
     public String username;
     public String firstname;
     public String lastname;
@@ -30,4 +26,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     public List<Role> roles;
+
+    @OneToMany(mappedBy = "user")
+    public List<CartItem> cartItems;
 }

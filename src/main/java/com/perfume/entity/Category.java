@@ -1,19 +1,23 @@
 package com.perfume.entity;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.util.Date;
+import lombok.Builder;
+import lombok.Data;
 
+import javax.persistence.*;
+import java.util.List;
 
-public class Category {
-    @Id
-    @GeneratedValue
-    public String id;
-
+@Data
+@Builder
+@Entity
+public class Category extends BaseEntity {
     public String name;
+
+    @Column(unique=true)
     public String code;
+
+    @Lob
     public String description;
-    public int status;
-    public Date createdAt;
-    public Date updatedAt;
+
+    @OneToMany(mappedBy = "category")
+    public List<Product> products;
 }
