@@ -19,7 +19,7 @@ public class User extends BaseEntity {
     public String phone;
     public String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -29,4 +29,19 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     public List<CartItem> cartItems;
+
+    public User() {
+    }
+
+    public User(String username, String firstname, String lastname, String email, String address, String phone, String password, List<Role> roles, List<CartItem> cartItems) {
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.address = address;
+        this.phone = phone;
+        this.password = password;
+        this.roles = roles;
+        this.cartItems = cartItems;
+    }
 }
