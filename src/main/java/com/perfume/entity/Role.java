@@ -1,5 +1,6 @@
 package com.perfume.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class Role {
     public String name;
 
     @ManyToMany(mappedBy = "roles" )
-//    @JoinColumn(insertable = false,updatable = false)
+    @JsonIgnore
     public List<User> users;
 
     public Role() {

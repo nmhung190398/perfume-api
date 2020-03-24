@@ -7,10 +7,11 @@ import javax.persistence.*;
 
 import java.util.List;
 
-@Data
 @Builder
 @Entity
+@Data
 public class User extends BaseEntity {
+    @Column(unique = true)
     public String username;
     public String firstname;
     public String lastname;
@@ -20,11 +21,7 @@ public class User extends BaseEntity {
     public String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_role")
     public List<Role> roles;
 
     @OneToMany(mappedBy = "user")

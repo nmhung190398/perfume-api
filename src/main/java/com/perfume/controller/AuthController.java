@@ -1,7 +1,9 @@
 package com.perfume.controller;
 
+import com.perfume.dto.CustomUserDetail;
 import com.perfume.entity.JwtRequest;
 import com.perfume.entity.JwtResponse;
+import com.perfume.entity.User;
 import com.perfume.repository.UserRepository;
 import com.perfume.sercurity.JwtToken;
 import com.perfume.sercurity.JwtUserDetailsService;
@@ -41,7 +43,8 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
+        User user = userRepository.findByUsername(authenticationRequest.getUsername());
 
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(new JwtResponse(token, user));
     }
 }

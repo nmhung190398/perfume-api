@@ -1,6 +1,5 @@
 package com.perfume.sercurity;
 
-import com.perfume.entity.Role;
 import com.perfume.entity.User;
 import com.perfume.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtUserDetailsService implements UserDetailsService {
@@ -23,14 +21,12 @@ public class JwtUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username);
-
+        List<SimpleGrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(user.getRoles().stream().toString()));
 
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
-        List<SimpleGrantedAuthority> roles = user.getRoles().stream().map(role -> {
-            return new SimpleGrantedAuthority(role.getName());
-        }).collect(Collectors.toList());
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
                 roles);
     }

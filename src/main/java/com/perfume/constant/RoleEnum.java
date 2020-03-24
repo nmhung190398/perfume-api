@@ -1,5 +1,5 @@
 package com.perfume.constant;
 
 public enum RoleEnum {
-    MEMBER, ADMIN, EMPLOYEE
+    ROLE_MEMBER, ROLE_ADMIN, ROLE_EMPLOYEE
 }
