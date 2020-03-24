@@ -2,6 +2,8 @@ package com.perfume;
 
 import com.perfume.constant.RoleEnum;
 import com.perfume.constant.TargetEnum;
+import com.perfume.dto.UserDTO;
+import com.perfume.dto.mapper.AbstractConver;
 import com.perfume.entity.Target;
 import com.perfume.entity.Role;
 import com.perfume.entity.User;
@@ -71,5 +73,15 @@ public class Application implements CommandLineRunner {
             user.setRoles(roleRepository.findAll());
             userRepository.save(user);
         }
+
+        testMapper();
+
     }
+    public void testMapper(){
+
+        AbstractConver abstractConver = new AbstractConver<User, UserDTO>() {
+        };
+        abstractConver.test();
+    }
+
 }
