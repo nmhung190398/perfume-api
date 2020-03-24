@@ -1,10 +1,8 @@
 package com.perfume.entity;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 public class Coupon {
     @Id
@@ -15,4 +13,9 @@ public class Coupon {
     public String code;
 
     public Date MFG;
+
+    public int total;
+
+    @OneToMany(mappedBy = "coupon")
+    List<Checkout> checkouts;
 }
