@@ -39,8 +39,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<User> create(@RequestBody User body) throws NoSuchAlgorithmException {
         String username = body.getUsername();
-        if (userRepository.existsByUsername(username))
-        {
+        if (userRepository.existsByUsername(username)) {
             throw new ValidationException("Username already existed");
         }
 
@@ -56,21 +55,6 @@ public class UserController {
         userRepository.save(user);
         user.setPassword("");
         return ResponseEntity.ok(user);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authenticationRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(), authenticationRequest.getPassword()
-                )
-        );
-
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(authenticationRequest.getUsername());
-        final String token = jwtTokenUtil.generateToken(userDetails);
-
-        return  ResponseEntity.ok(new JwtResponse(token));
     }
 
     @GetMapping("/all")

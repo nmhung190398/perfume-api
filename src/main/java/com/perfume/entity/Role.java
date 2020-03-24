@@ -3,9 +3,7 @@ package com.perfume.entity;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
@@ -13,10 +11,21 @@ import java.util.List;
 @Entity
 public class Role {
     @Id
-    public long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id;
 
     public String name;
 
-    @ManyToMany(mappedBy = "roles")
+    @ManyToMany(mappedBy = "roles" )
+//    @JoinColumn(insertable = false,updatable = false)
     public List<User> users;
+
+    public Role() {
+    }
+
+    public Role(Long id, String name, List<User> users) {
+        this.id = id;
+        this.name = name;
+        this.users = users;
+    }
 }
