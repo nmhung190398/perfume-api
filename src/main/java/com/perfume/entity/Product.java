@@ -23,6 +23,7 @@ public class Product extends BaseEntity {
     public String description;
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
     public Category category;
     
     @OneToMany(mappedBy = "product")
@@ -30,4 +31,20 @@ public class Product extends BaseEntity {
 
     @OneToMany(mappedBy = "product")
     public List<CartItem> cartItems;
+
+    @ManyToOne
+    @JoinColumn(name = "producer_id")
+    public Producer producer;
+
+    @ManyToOne
+    @JoinColumn(name = "amount_id")
+    public Amount amount;
+
+    @ManyToOne
+    @JoinColumn(name = "fragrant_id")
+    public Fragrant fragrant;
+
+    @ManyToMany
+    @JoinTable(name = "product_target")
+    private List<Target> targets;
 }
