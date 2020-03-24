@@ -4,6 +4,7 @@ import com.perfume.constant.RoleEnum;
 import com.perfume.entity.JwtRequest;
 import com.perfume.entity.JwtResponse;
 import com.perfume.entity.Role;
+import com.perfume.repository.RoleRepository;
 import com.perfume.repository.UserRepository;
 import com.perfume.entity.User;
 import com.perfume.sercurity.JwtToken;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ValidationException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,6 +29,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -47,13 +53,17 @@ public class UserController {
         String password = body.getPassword();
         String encodedPassword = new BCryptPasswordEncoder().encode(password);
 
-        List<Role> roles = Arrays.asList(
-                Role.builder().name(RoleEnum.MEMBER.toString()).build());
+        User user = body;
+        Role role = roleRepository.findById(1L).get();
+        role.builder().users(Collections.singletonList(user)).build();
 
-        User user;
-        user = body.builder().roles(roles).password(encodedPassword).build();
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        user.setRoles(roles);
+        user.builder().password(encodedPassword).build();
 
         userRepository.save(user);
+
         user.setPassword("");
         return ResponseEntity.ok(user);
     }

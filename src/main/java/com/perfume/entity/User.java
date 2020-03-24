@@ -1,5 +1,6 @@
 package com.perfume.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -20,11 +21,8 @@ public class User extends BaseEntity {
     public String password;
 
     @ManyToMany
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_role")
+    @JsonIgnore
     public List<Role> roles;
 
     @OneToMany(mappedBy = "user")

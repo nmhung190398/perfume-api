@@ -1,16 +1,16 @@
 package com.perfume.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Data
 @Builder
 @Entity
+@AllArgsConstructor
 public class Role {
     @Id
     public long id;
@@ -19,4 +19,7 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     public List<User> users;
+
+    public Role() {
+    }
 }
