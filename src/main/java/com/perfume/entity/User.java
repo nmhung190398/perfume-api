@@ -1,5 +1,7 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.QueryField;
+import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,13 +12,20 @@ import java.util.List;
 @Builder
 @Entity
 @Data
+@TableName
 public class User extends BaseEntity {
     @Column(unique = true)
+    @QueryField
     public String username;
+    @QueryField
     public String firstname;
+    @QueryField
     public String lastname;
+    @QueryField
     public String email;
+    @QueryField
     public String address;
+    @QueryField
     public String phone;
     public String password;
 

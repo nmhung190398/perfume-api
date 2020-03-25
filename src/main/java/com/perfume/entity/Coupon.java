@@ -1,13 +1,14 @@
 package com.perfume.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-public class Coupon {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+@Data
+@Entity
+public class Coupon extends BaseEntity {
 
     @Column(unique=true)
     public String code;

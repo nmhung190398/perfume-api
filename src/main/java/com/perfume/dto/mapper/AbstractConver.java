@@ -6,40 +6,52 @@ import org.modelmapper.ModelMapper;
 
 import java.lang.reflect.ParameterizedType;
 
-public abstract class AbstractConver<E,D> {
+public class AbstractConver<E, D> {
     protected static ModelMapper modelMapper = new ModelMapper();
 
-//    abstract D toDTO(E entity);
-//    abstract E toEntity(D dto);
+    public D toDTO(E entity) {
+        return modelMapper.map(entity, getTypeDTO());
+    }
 
-    public String[] converToArray(String data){
-        if(StringUtils.isNotBlank(data)){
+    public E toEntity(D dto) {
+        return modelMapper.map(dto, getTypeEntity());
+    }
+
+    public String[] converToArray(String data) {
+        if (StringUtils.isNotBlank(data)) {
             return data.split("~");
         }
         return null;
     }
 
-    public  String converToString(String[] data){
-        if(data != null){
-            return StringUtils.join(data,"~");
+    public String converToString(String[] data) {
+        if (data != null) {
+            return StringUtils.join(data, "~");
         }
         return null;
     }
 
-    protected E toEntity(Class<E> type, D source){
-        return modelMapper.map(source,type);
+    protected E toEntity(Class<E> type, D source) {
+        return modelMapper.map(source, type);
     }
 
-    protected D toDTO(Class<D> type, E source){
-        return modelMapper.map(source,type);
+    protected D toDTO(Class<D> type, E source) {
+        return modelMapper.map(source, type);
     }
 
-    public Class<D> test(){
-        Class type = (Class)
-                ((ParameterizedType)getClass()
+    private Class<D> getTypeDTO() {
+        return getType(1);
+    }
+
+    private Class<E> getTypeEntity() {
+        return getType(0);
+    }
+
+    private Class getType(int index) {
+        Class type = (Class<E>)
+                ((ParameterizedType) getClass()
                         .getGenericSuperclass())
-                        .getActualTypeArguments()[1];
-
+                        .getActualTypeArguments()[index];
         return type;
     }
 

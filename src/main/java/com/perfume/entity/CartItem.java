@@ -1,5 +1,6 @@
 package com.perfume.entity;
 
+import com.perfume.dto.BaseDTO;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,10 +9,7 @@ import javax.persistence.*;
 @Data
 @Builder
 @Entity
-public class CartItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+public class CartItem extends BaseEntity {
 
     @Column(name = "user_id", insertable = false, updatable = false)
     public Long userId;

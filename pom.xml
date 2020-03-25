@@ -93,6 +93,14 @@
 			<version>2.3.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.nmhung</groupId>
+			<artifactId>CoreBackend</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/CoreBackend-1.0-SNAPSHOT.jar</systemPath>
+		</dependency>
+
 	</dependencies>
 
 	<build>

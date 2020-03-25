@@ -1,5 +1,8 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.QueryField;
+import com.nmhung.anotation.Supperclass;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.GeneratedValue;
@@ -10,12 +13,19 @@ import java.util.Date;
 
 @MappedSuperclass
 @Data
+@Supperclass
+//@Builder
 public class BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @QueryField
     private Long id;
 
-    private int status;
+    @QueryField
+    private Integer status;
+    @QueryField
     private Date createdAt;
+    @QueryField
     private Date updatedAt;
 }

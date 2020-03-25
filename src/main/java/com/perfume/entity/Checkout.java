@@ -15,7 +15,7 @@ public class Checkout extends BaseEntity {
     public User user;
 
     @ManyToOne
-    @JoinColumn(name = "checkout_id")
+    @JoinColumn(name = "coupon_id")
     public Coupon coupon;
 
     @OneToMany(mappedBy = "checkout")
