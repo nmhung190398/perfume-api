@@ -1,7 +1,9 @@
 package com.perfume;
 
+import com.mysql.cj.xdevapi.JsonArray;
 import com.perfume.constant.RoleEnum;
 import com.perfume.constant.TargetEnum;
+import com.perfume.entity.Product;
 import com.perfume.entity.Target;
 import com.perfume.entity.Role;
 import com.perfume.entity.User;
@@ -55,6 +57,14 @@ public class Application implements CommandLineRunner {
                 targetRepository.save(target);
             }
         }
+
+        Product product = new Product();
+        product.setHighlight(
+            "{" +
+            "   \"hot\": \"\"," +
+            "   \"new\": \"\"," +
+            "}"
+        );
 
         List<Role> roles = Arrays.asList(
                 Role.builder().name(RoleEnum.ROLE_ADMIN.toString()).users(Arrays.asList(user)).build(),
