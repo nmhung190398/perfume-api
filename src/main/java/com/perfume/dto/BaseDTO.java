@@ -1,0 +1,21 @@
+package com.perfume.dto;
+
+import com.nmhung.anotation.QueryField;
+import com.nmhung.anotation.Supperclass;
+import lombok.Data;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import java.util.Date;
+
+
+@Data
+//@Builder
+public class BaseDTO {
+    private Long id;
+    private Integer status;
+    private Date createdAt;
+    private Date updatedAt;
+}
