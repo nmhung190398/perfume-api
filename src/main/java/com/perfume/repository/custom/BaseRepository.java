@@ -10,11 +10,13 @@ import java.util.List;
 
 public interface BaseRepository<E> {
     Page<E> filterPage(MultiValueMap<String, Object> queryParams, Pageable pageable);
-    List<E> filter(MultiValueMap<String, Object> queryParams, Pageable pageable);
+    List<E> filter(MultiValueMap<String, Object> queryParams);
     Long count(MultiValueMap<String, Object> queryParams);
     List<E> find(E e);
-    boolean Update(E e);
-    boolean UpdateFull(E e);
+    Long count(E e);
+    Page<E> findPage(E e,Pageable pageable);
+    boolean update(E e);
+    boolean updateFull(E e);
 //    List<E> getAll();
 //    List<E> getOne();
 }

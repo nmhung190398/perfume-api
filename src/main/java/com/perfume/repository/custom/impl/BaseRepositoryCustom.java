@@ -37,12 +37,12 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
         this.asName = asName;
     }
 
-    private MultiValueMap<String, Object> toMultiValueMap(Map<String, List<Object>> map) {
-        MultiValueMap<String, Object> valueMap = new LinkedMultiValueMap<>();
-        map.forEach((key, value) -> {
-            valueMap.addAll(key, map.get(key));
+    private Map<String, Object> toMap(MultiValueMap<String, Object> multiValueMap) {
+        Map<String, Object> map = new HashMap<>();
+        multiValueMap.forEach((s, objects) -> {
+            map.put(s, objects);
         });
-        return valueMap;
+        return map;
     }
 
     @PersistenceContext
@@ -50,24 +50,21 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
 
     @Override
     public Page<E> filterPage(MultiValueMap<String, Object> queryParams, Pageable pageable) {
-        List<E> list = filter(queryParams, pageable);
+        ResponseBaseDAO responseBaseDAO = super.createQuery(toMap((queryParams)));
+        Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
+        responseBaseDAO.getValues().forEach(query::setParameter);
+        query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        query.setMaxResults(pageable.getPageSize());
+        List<E> list = query.getResultList();
         Long count = count(queryParams);
         return new PageImpl<E>(list, pageable, count);
     }
 
     @Override
-    public List<E> filter(MultiValueMap<String, Object> queryParams, Pageable pageable) {
-//        String sql = String.join(" ", "SELECT", asName, "FROM", nameTable, asName, " ");
-//        Map<String, Object> values = new HashMap<>();
-//        sql += createWhereQuery(queryParams, values);
-//        sql += createOrderQuery(queryParams);
-        ResponseBaseDAO responseBaseDAO = super.createQuery(toMultiValueMap((queryParams)));
+    public List<E> filter(MultiValueMap<String, Object> queryParams) {
+        ResponseBaseDAO responseBaseDAO = super.createQuery(toMap((queryParams)));
         Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
         responseBaseDAO.getValues().forEach(query::setParameter);
-        if (pageable != null) {
-            query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
-            query.setMaxResults(pageable.getPageSize());
-        }
         List<E> list = query.getResultList();
         return list;
 //        Long count = count(queryParams);
@@ -76,10 +73,7 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
 
     @Override
     public Long count(MultiValueMap<String, Object> queryParams) {
-//        String sql = String.join(" ", "SELECT", "COUNT(", asName, ")", "FROM", nameTable, asName, " ");
-//        Map<String, Object> values = new HashMap<>();
-//        sql += createWhereQuery(queryParams, values);
-        ResponseBaseDAO responseBaseDAO = super.createQueryCount(toMultiValueMap((queryParams)));
+        ResponseBaseDAO responseBaseDAO = super.createQueryCount(toMap((queryParams)));
         Query query = entityManager.createQuery(responseBaseDAO.getSql(), Long.class);
         responseBaseDAO.getValues().forEach(query::setParameter);
         return (Long) query.getSingleResult();
@@ -87,7 +81,7 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
 
     @Override
     public List<E> find(E e) {
-        ResponseBaseDAO responseBaseDAO = super.createQueryByEntity(e);
+        ResponseBaseDAO responseBaseDAO = super.createQuery(e);
         Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
         responseBaseDAO.getValues().forEach(query::setParameter);
         List<E> list = query.getResultList();
@@ -95,16 +89,40 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
     }
 
     @Override
-    public boolean Update(E e) {
-        ResponseBaseDAO responseBaseDAO = super.update(e);
-        Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
+    public Page<E> findPage(E e, Pageable pageable) {
+        ResponseBaseDAO responseBaseDAO = super.createQuery(e);
+        Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
+        responseBaseDAO.getValues().forEach(query::setParameter);
+        query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
+        query.setMaxResults(pageable.getPageSize());
+
+        Long count = count(e);
+        List<E> list = query.getResultList();
+        return new PageImpl<E>(list, pageable, count);
+    }
+
+    @Override
+    public Long count(E e) {
+        ResponseBaseDAO responseBaseDAO = super.createQueryCount(e);
+        Query query = entityManager.createQuery(responseBaseDAO.getSql(), Long.class);
+        responseBaseDAO.getValues().forEach(query::setParameter);
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public boolean update(E e) {
+        ResponseBaseDAO responseBaseDAO = super.createUpdate(e);
+        Query query = this.entityManager.createQuery(responseBaseDAO.getSql());//        String sql = String.join(" ", "SELECT", asName, "FROM", nameTable, asName, " ");
+//        Map<String, Object> values = new HashMap<>();
+//        sql += createWhereQuery(queryParams, values);
+//        sql += createOrderQuery(queryParams);
         int rs = query.executeUpdate();
         return rs > 0;
     }
 
     @Override
-    public boolean UpdateFull(E e) {
-        ResponseBaseDAO responseBaseDAO = super.updateFull(e);
+    public boolean updateFull(E e) {
+        ResponseBaseDAO responseBaseDAO = super.createUpdateFull(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
         int rs = query.executeUpdate();
         return rs > 0;
