@@ -15,4 +15,13 @@ public class CategoryDTO extends BaseDTO {
     public String name;
     public String code;
     public String description;
+
+    public CategoryDTO() {
+    }
+
+    public CategoryDTO(String name, String code, String description) {
+        this.name = name;
+        this.code = code;
+        this.description = description;
+    }
 }

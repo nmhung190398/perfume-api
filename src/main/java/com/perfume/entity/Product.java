@@ -4,6 +4,7 @@ import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -68,4 +69,29 @@ public class Product extends BaseEntity {
     @ManyToMany
     @JoinTable(name = "product_target")
     private List<Target> targets;
+
+    public Product() {
+    }
+
+    public Product(String name, String code, String highlight, String gender, Date MFG, Date EXP, String image, String description, Category category, Long categoryId, List<Version> versions, List<CartItem> cartItems, Producer producer, Long producerId, Amount amount, Long amountId, Fragrant fragrant, Long fragrantId, List<Target> targets) {
+        this.name = name;
+        this.code = code;
+        this.highlight = highlight;
+        this.gender = gender;
+        this.MFG = MFG;
+        this.EXP = EXP;
+        this.image = image;
+        this.description = description;
+        this.category = category;
+        this.categoryId = categoryId;
+        this.versions = versions;
+        this.cartItems = cartItems;
+        this.producer = producer;
+        this.producerId = producerId;
+        this.amount = amount;
+        this.amountId = amountId;
+        this.fragrant = fragrant;
+        this.fragrantId = fragrantId;
+        this.targets = targets;
+    }
 }

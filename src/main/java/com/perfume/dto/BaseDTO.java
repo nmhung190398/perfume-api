@@ -1,5 +1,6 @@
 package com.perfume.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.Supperclass;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.Date;
 //@Builder
 public class BaseDTO {
     private Long id;
+    @JsonIgnore
     private Integer status;
     private Date createdAt;
     private Date updatedAt;

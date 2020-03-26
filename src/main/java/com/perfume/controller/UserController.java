@@ -38,7 +38,7 @@ public class UserController {
     private JwtToken jwtTokenUtil;
 
     @PostMapping("/add")
-    public ResponseEntity<User> create(@RequestBody User user) throws NoSuchAlgorithmException {
+    public ResponseEntity<User> create(@RequestBody User user) {
         String username = user.getUsername();
         if (userRepository.existsByUsername(username)) {
             throw new ValidationException("Username already existed");

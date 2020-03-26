@@ -13,6 +13,7 @@ import org.springframework.util.MultiValueMap;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
@@ -124,6 +125,7 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
     public boolean updateFull(E e) {
         ResponseBaseDAO responseBaseDAO = super.createUpdateFull(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
+        responseBaseDAO.getValues().forEach(query::setParameter);
         int rs = query.executeUpdate();
         return rs > 0;
     }
