@@ -1,6 +1,5 @@
 package com.perfume.controller;
 
-import com.perfume.dto.CustomUserDetail;
 import com.perfume.entity.JwtRequest;
 import com.perfume.entity.JwtResponse;
 import com.perfume.entity.User;

@@ -2,8 +2,6 @@ package com.perfume;
 
 import com.perfume.constant.RoleEnum;
 import com.perfume.constant.TargetEnum;
-import com.perfume.dto.UserDTO;
-import com.perfume.dto.mapper.AbstractConver;
 import com.perfume.dto.mapper.UserMapper;
 import com.perfume.entity.Product;
 import com.perfume.entity.Target;
@@ -16,13 +14,7 @@ import com.perfume.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScans;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -117,9 +109,6 @@ public class Application implements CommandLineRunner {
 //        Page<Target> targetPage = targetRepository.filterPage(new LinkedMultiValueMap<>(),PageRequest.of(1,2));
 
         System.out.println("");
-
-
-//        System.out.println(userRepository.count(queryParams));
     }
 
 }
