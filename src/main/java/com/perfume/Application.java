@@ -89,8 +89,8 @@ public class Application implements CommandLineRunner {
 
     }
     public void testMapper(){
-        Product product = Product.builder().categoryId(1L).build();
-        List<Product> list = productRepository.find(product);
+//        Product product = Product.builder().categoryId(1L).build();
+//        List<Product> list = productRepository.find(product);
 //        User user = User.builder().username("admin").password(new BCryptPasswordEncoder().encode("123456"))
 //                .address("Thái Nguyên").email("nmhung190398@gmail.com").firstname("hung").lastname("nguyen")
 //                .build();
@@ -104,7 +104,7 @@ public class Application implements CommandLineRunner {
 //        System.out.println(users.get(0).getUsername());ull
         queryParams.add("id", "1");
 
-        List<Target> targets = targetRepository.filter(new LinkedMultiValueMap<>(), null);
+        List<Target> targets = targetRepository.filter(new LinkedMultiValueMap<>());
 //        Long cout = targetRepository.count(new LinkedMultiValueMap<>());
 //        Page<Target> targetPage = targetRepository.filterPage(new LinkedMultiValueMap<>(),PageRequest.of(1,2));
 

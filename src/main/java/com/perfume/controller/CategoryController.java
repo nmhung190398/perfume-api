@@ -81,14 +81,14 @@ public class CategoryController {
     @PostMapping("/update")
     public ResponseEntity<String> update(@RequestBody Category body) {
         body.setStatus(null);
-        categoryRepository.updateE(body);
+        categoryRepository.update(body);
         return ResponseEntity.ok("Update Success");
     }
 
     @PostMapping("/delete")
     public ResponseEntity<String> delete(@RequestBody Category body) {
         body.setStatus(StatusEnum.DELETED.getValue());
-        categoryRepository.updateE(body);
+        categoryRepository.update(body);
         return ResponseEntity.ok("Delete Success");
     }
 }
