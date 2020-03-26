@@ -41,7 +41,12 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
     private Map<String, Object> toMap(MultiValueMap<String, Object> multiValueMap) {
         Map<String, Object> map = new HashMap<>();
         multiValueMap.forEach((s, objects) -> {
-            map.put(s, objects);
+            if(objects.size() == 1){
+                map.put(s, objects.get(0));
+            }else{
+                map.put(s,objects);
+            }
+
         });
         return map;
     }
@@ -111,17 +116,17 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
     }
 
     @Override
+    @Transactional
     public boolean update(E e) {
         ResponseBaseDAO responseBaseDAO = super.createUpdate(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());//        String sql = String.join(" ", "SELECT", asName, "FROM", nameTable, asName, " ");
-//        Map<String, Object> values = new HashMap<>();
-//        sql += createWhereQuery(queryParams, values);
-//        sql += createOrderQuery(queryParams);
+        responseBaseDAO.getValues().forEach(query::setParameter);
         int rs = query.executeUpdate();
         return rs > 0;
     }
 
     @Override
+    @Transactional
     public boolean updateFull(E e) {
         ResponseBaseDAO responseBaseDAO = super.createUpdateFull(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
