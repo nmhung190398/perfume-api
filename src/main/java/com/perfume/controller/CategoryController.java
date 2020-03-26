@@ -3,6 +3,7 @@ package com.perfume.controller;
 import com.perfume.constant.StatusEnum;
 import com.perfume.dto.CategoryDTO;
 import com.perfume.dto.PagingDTO;
+import com.perfume.dto.ResponseMsg;
 import com.perfume.dto.ResponsePaging;
 import com.perfume.dto.mapper.CategoryMapper;
 import com.perfume.entity.Category;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ValidationException;
@@ -22,8 +24,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RestController
+@Controller
 @RequestMapping("/api/category")
+//@CrossOrigin(origins = "*", maxAge = 3600,allowCredentials="true")
 public class CategoryController {
     @Autowired
     CategoryRepository categoryRepository;
@@ -32,27 +35,28 @@ public class CategoryController {
     CategoryMapper categoryMapper;
 
     @PostMapping("")
-    public ResponseEntity<Category> create(@RequestBody Category body) {
+    public ResponseEntity<ResponseMsg<Category>> create(@RequestBody Category body) {
         if (categoryRepository.existsByCode(body.getCode())) {
             throw new ValidationException("code already existed");
         }
         body.setStatus(StatusEnum.ACTIVE.getValue());
-
+        body.setId(null);
         categoryRepository.save(body);
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new ResponseMsg<>(body, 200, ""));
     }
 
-    @PutMapping("")
-    public ResponseEntity<String> update(@RequestBody Category body) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseMsg<Category>> update(@RequestBody Category body, @PathVariable Long id) {
         body.setStatus(null);
+        body.setId(id);
         categoryRepository.update(body);
-        return ResponseEntity.ok("Update Success");
+        return ResponseEntity.ok(new ResponseMsg<>(body, 200, ""));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    public ResponseEntity<ResponseMsg<Long>> delete(@PathVariable Long id) {
         categoryRepository.changeStatus(id, StatusEnum.DELETED.getValue());
-        return ResponseEntity.ok("Delete Success");
+        return ResponseEntity.ok(new ResponseMsg<>(id, 200, ""));
     }
 
     @GetMapping("")
@@ -69,11 +73,11 @@ public class CategoryController {
         }
 
         return ResponseEntity.ok(
-                new ResponsePaging<>(categories, new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset()))
+                new ResponsePaging<>(categories, new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset()))
         );
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getById(@PathVariable Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if (!category.isPresent()) {
@@ -103,7 +107,7 @@ public class CategoryController {
         if (pagedResult.hasContent()) {
             categories = pagedResult.getContent().stream().map(categoryMapper::toDTO).collect(Collectors.toList());
         }
-        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(categories, pagingDTO));
     }
 }
