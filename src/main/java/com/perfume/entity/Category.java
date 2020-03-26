@@ -1,5 +1,7 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.QueryField;
+import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,12 +11,16 @@ import java.util.List;
 @Data
 @Builder
 @Entity
+@TableName
 public class Category extends BaseEntity {
+    @QueryField
     public String name;
 
     @Column(unique=true)
+    @QueryField
     public String code;
 
+    @QueryField
     @Lob
     public String description;
 
