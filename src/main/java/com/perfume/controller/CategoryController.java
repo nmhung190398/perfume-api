@@ -31,7 +31,7 @@ public class CategoryController {
     @Autowired
     CategoryMapper categoryMapper;
 
-    @PostMapping("/add")
+    @PostMapping("")
     public ResponseEntity<Category> create(@RequestBody Category body) {
         if (categoryRepository.existsByCode(body.getCode())) {
             throw new ValidationException("code already existed");
@@ -42,7 +42,20 @@ public class CategoryController {
         return ResponseEntity.ok(body);
     }
 
-    @GetMapping("/all")
+    @PutMapping("")
+    public ResponseEntity<String> update(@RequestBody Category body) {
+        body.setStatus(null);
+        categoryRepository.update(body);
+        return ResponseEntity.ok("Update Success");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        categoryRepository.changeStatus(id, StatusEnum.DELETED.getValue());
+        return ResponseEntity.ok("Delete Success");
+    }
+
+    @GetMapping("")
     public ResponseEntity<ResponsePaging<CategoryDTO>> getAll(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer limit
@@ -51,7 +64,7 @@ public class CategoryController {
         Page<Category> pagedResult = categoryRepository.getAll(paging);
         List<CategoryDTO> categories = new ArrayList<>();
 
-        if(pagedResult.hasContent()) {
+        if (pagedResult.hasContent()) {
             categories = pagedResult.getContent().stream().map(categoryMapper::toDTO).collect(Collectors.toList());
         }
 
@@ -60,7 +73,7 @@ public class CategoryController {
         );
     }
 
-    @GetMapping("/one/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<CategoryDTO> getById(@PathVariable Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if (!category.isPresent()) {
@@ -69,26 +82,28 @@ public class CategoryController {
         return ResponseEntity.ok(categoryMapper.toDTO(category.get()));
     }
 
+    // end crud
+
     @PostMapping("/filter")
-    public ResponseEntity<List<CategoryDTO>> get(@RequestBody Category body) {
+    public ResponseEntity<List<CategoryDTO>> filter(@RequestBody Category body) {
         body.setStatus(StatusEnum.ACTIVE.getValue());
         List<Category> categories = categoryRepository.find(body);
 
         return ResponseEntity.ok(
-                categories.stream().map(x-> categoryMapper.toDTO(x)).collect(Collectors.toList())
+                categories.stream().map(x -> categoryMapper.toDTO(x)).collect(Collectors.toList())
         );
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<String> update(@RequestBody Category body) {
-        body.setStatus(null);
-        categoryRepository.update(body);
-        return ResponseEntity.ok("Update Success");
-    }
-
-    @GetMapping("/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
-        categoryRepository.changeStatus(id,StatusEnum.DELETED.getValue());
-        return ResponseEntity.ok("Delete Success");
+    @PostMapping("/filter/{page}/{limit}")
+    public ResponseEntity<ResponsePaging<CategoryDTO>> filterPage(@RequestBody Category body, @PathVariable int page, @PathVariable int limit) {
+        body.setStatus(StatusEnum.ACTIVE.getValue());
+        Pageable paging = PageRequest.of(page - 1, limit);
+        Page<Category> pagedResult = categoryRepository.findPage(body, paging);
+        List<CategoryDTO> categories = new ArrayList<>();
+        if (pagedResult.hasContent()) {
+            categories = pagedResult.getContent().stream().map(categoryMapper::toDTO).collect(Collectors.toList());
+        }
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
+        return ResponseEntity.ok(new ResponsePaging<>(categories, pagingDTO));
     }
 }
