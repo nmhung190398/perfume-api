@@ -2,6 +2,8 @@ package com.perfume.repository.custom.impl;
 
 import com.nmhung.sql.BaseDAO;
 import com.nmhung.sql.model.ResponseBaseDAO;
+import com.perfume.constant.StatusEnum;
+import com.perfume.entity.BaseEntity;
 import com.perfume.entity.Product;
 import com.perfume.repository.custom.BaseRepository;
 import org.springframework.data.domain.Page;
@@ -19,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepository<E> {
+public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> implements BaseRepository<E> {
 //    protected String nameTable = getType(0).getName();
 //
 //    private Class<E> getType(int index) {
@@ -133,6 +135,38 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
         responseBaseDAO.getValues().forEach(query::setParameter);
         int rs = query.executeUpdate();
         return rs > 0;
+    }
+
+    @Override
+    @Transactional
+    public boolean changeStatus(Long id, int status) {
+            E e = newInstance();
+            if(e == null){
+                return false;
+            }
+            e.setStatus(status);
+            e.setId(id);
+
+        return this.update(e);
+
+    }
+
+    private E newInstance(){
+        try {
+            return type.newInstance();
+        } catch (InstantiationException ex) {
+            ex.printStackTrace();
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Page<E> getAll(Pageable pageable) {
+        E e = this.newInstance();
+        e.setStatus(StatusEnum.ACTIVE.getValue());
+        return findPage(e,pageable);
     }
 
 

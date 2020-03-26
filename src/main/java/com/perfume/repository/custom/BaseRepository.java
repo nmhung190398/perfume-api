@@ -17,6 +17,8 @@ public interface BaseRepository<E> {
     Page<E> findPage(E e,Pageable pageable);
     boolean update(E e);
     boolean updateFull(E e);
+    boolean changeStatus(Long id, int status);
+    Page<E> getAll(Pageable pageable);
 //    List<E> getAll();
 //    List<E> getOne();
 }
