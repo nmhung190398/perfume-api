@@ -6,6 +6,7 @@ import com.perfume.dto.PagingDTO;
 import com.perfume.dto.ResponsePaging;
 import com.perfume.dto.mapper.CategoryMapper;
 import com.perfume.entity.Category;
+import com.perfume.entity.User;
 import com.perfume.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,7 +48,7 @@ public class CategoryController {
             @RequestParam(defaultValue = "10") Integer limit
     ) {
         Pageable paging = PageRequest.of(page - 1, limit);
-        Page<Category> pagedResult = categoryRepository.findAll(paging);
+        Page<Category> pagedResult = categoryRepository.getAll(paging);
         List<CategoryDTO> categories = new ArrayList<>();
 
         if(pagedResult.hasContent()) {
@@ -85,10 +86,9 @@ public class CategoryController {
         return ResponseEntity.ok("Update Success");
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<String> delete(@RequestBody Category body) {
-        body.setStatus(StatusEnum.DELETED.getValue());
-        categoryRepository.update(body);
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        categoryRepository.changeStatus(id,StatusEnum.DELETED.getValue());
         return ResponseEntity.ok("Delete Success");
     }
 }
