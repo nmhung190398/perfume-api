@@ -8,10 +8,7 @@ import javax.persistence.*;
 @Data
 @Builder
 @Entity
-public class CheckoutItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+public class CheckoutItem extends BaseEntity {
 
     @Column(name = "user_id", insertable = false, updatable = false)
     public Long userId;
