@@ -94,5 +94,21 @@ public class BaseRepositoryCustom<E> extends BaseDAO<E> implements BaseRepositor
         return list;
     }
 
+    @Override
+    public boolean Update(E e) {
+        ResponseBaseDAO responseBaseDAO = super.update(e);
+        Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
+        int rs = query.executeUpdate();
+        return rs > 0;
+    }
+
+    @Override
+    public boolean UpdateFull(E e) {
+        ResponseBaseDAO responseBaseDAO = super.updateFull(e);
+        Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
+        int rs = query.executeUpdate();
+        return rs > 0;
+    }
+
 
 }

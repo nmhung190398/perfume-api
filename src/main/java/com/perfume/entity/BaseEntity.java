@@ -19,7 +19,7 @@ public class BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @QueryField
+    @QueryField(id = true)
     private Long id;
 
     @QueryField

@@ -13,6 +13,8 @@ public interface BaseRepository<E> {
     List<E> filter(MultiValueMap<String, Object> queryParams, Pageable pageable);
     Long count(MultiValueMap<String, Object> queryParams);
     List<E> find(E e);
+    boolean Update(E e);
+    boolean UpdateFull(E e);
 //    List<E> getAll();
 //    List<E> getOne();
 }
