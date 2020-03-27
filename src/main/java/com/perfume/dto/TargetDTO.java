@@ -9,12 +9,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Builder
-public class TargetDTO extends BaseDTO {
+public class TargetDTO {
+    private Long id;
 
     private String name;
 
-//    private Set<Product> products;
+    public TargetDTO() {
+    }
+
+    public TargetDTO(String name) {
+
+        this.name = name;
+    }
+
+    //    private Set<Product> products;
 
 
 }

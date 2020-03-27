@@ -7,28 +7,26 @@ import org.modelmapper.ModelMapper;
 import java.lang.reflect.ParameterizedType;
 
 public class AbstractConver<E, D> {
-    protected static ModelMapper modelMapper = new ModelMapper();
+    protected ModelMapper modelMapper;
+
+    public AbstractConver() {
+        modelMapper = new ModelMapper();
+    }
 
     public D toDTO(E entity) {
-        return modelMapper.map(entity, getTypeDTO());
+        return modelMapper.map(entity, this.getTypeDTO());
     }
 
     public E toEntity(D dto) {
-        return modelMapper.map(dto, getTypeEntity());
+        return modelMapper.map(dto, this.getTypeEntity());
     }
 
     public String[] converToArray(String data) {
-        if (StringUtils.isNotBlank(data)) {
-            return data.split("~");
-        }
-        return null;
+        return StringUtils.isNotBlank(data) ? data.split("~") : null;
     }
 
     public String converToString(String[] data) {
-        if (data != null) {
-            return StringUtils.join(data, "~");
-        }
-        return null;
+        return data != null ? StringUtils.join(data, "~") : null;
     }
 
     protected E toEntity(Class<E> type, D source) {
@@ -40,18 +38,15 @@ public class AbstractConver<E, D> {
     }
 
     private Class<D> getTypeDTO() {
-        return getType(1);
+        return this.getType(1);
     }
 
     private Class<E> getTypeEntity() {
-        return getType(0);
+        return this.getType(0);
     }
 
     private Class getType(int index) {
-        Class type = (Class<E>)
-                ((ParameterizedType) getClass()
-                        .getGenericSuperclass())
-                        .getActualTypeArguments()[index];
+        Class type = (Class)((ParameterizedType)this.getClass().getGenericSuperclass()).getActualTypeArguments()[index];
         return type;
     }
 

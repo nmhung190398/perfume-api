@@ -13,7 +13,6 @@ import java.util.Date;
 
 
 @Data
-//@Builder
 public class BaseDTO {
     private Long id;
     @JsonIgnore

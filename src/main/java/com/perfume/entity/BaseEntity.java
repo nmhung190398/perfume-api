@@ -1,5 +1,6 @@
 package com.perfume.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.Supperclass;
 import lombok.Builder;
@@ -14,7 +15,6 @@ import java.util.Date;
 @MappedSuperclass
 @Data
 @Supperclass
-//@Builder
 public class BaseEntity {
 
     @Id
@@ -23,9 +23,13 @@ public class BaseEntity {
     private Long id;
 
     @QueryField
+    @JsonIgnore
     private Integer status;
     @QueryField
     private Date createdAt;
     @QueryField
     private Date updatedAt;
+
+    public BaseEntity() {
+    }
 }

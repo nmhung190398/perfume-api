@@ -3,10 +3,7 @@ package com.perfume;
 import com.perfume.constant.RoleEnum;
 import com.perfume.constant.TargetEnum;
 import com.perfume.dto.mapper.UserMapper;
-import com.perfume.entity.Product;
-import com.perfume.entity.Target;
-import com.perfume.entity.Role;
-import com.perfume.entity.User;
+import com.perfume.entity.*;
 import com.perfume.repository.ProductRepository;
 import com.perfume.repository.RoleRepository;
 import com.perfume.repository.TargetRepository;
@@ -48,20 +45,27 @@ public class Application implements CommandLineRunner {
     @Autowired
     ProductRepository productRepository;
 
+
     @Override
     public void run(String... args) throws Exception {
 
         // Khi chương trình chạy
 //         Insert vào csdl một user.
-        User user = User.builder().username("admin").password(new BCryptPasswordEncoder().encode("123456"))
-                .address("Thái Nguyên").email("nmhung190398@gmail.com").firstname("hung").lastname("nguyen").build();
+        User user = new User();
+        user.setUsername("admin");
+        user.setPassword(new BCryptPasswordEncoder().encode("123456"));
+        user.setAddress("Thái Nguyên");
+        user.setEmail("nmhung190398@gmail.com");
+        user.setFirstname("hung");
+        user.setFirstname("nguyen");
 
         List<Target> targets = Arrays.asList(
-                Target.builder().name(TargetEnum.MALE.getValue()).build(),
-                Target.builder().name(TargetEnum.FEMALE.getValue()).build(),
-                Target.builder().name(TargetEnum.GAY.getValue()).build(),
-                Target.builder().name(TargetEnum.LES.getValue()).build(),
-                Target.builder().name(TargetEnum.CAR.getValue()).build()
+
+                new Target(TargetEnum.MALE.getValue()),
+                new Target(TargetEnum.FEMALE.getValue()),
+                new Target(TargetEnum.GAY.getValue()),
+                new Target(TargetEnum.LES.getValue()),
+                new Target(TargetEnum.CAR.getValue())
         );
 
         for (Target target:
@@ -72,9 +76,9 @@ public class Application implements CommandLineRunner {
         }
 
         List<Role> roles = Arrays.asList(
-                Role.builder().name(RoleEnum.ROLE_ADMIN.toString()).users(Arrays.asList(user)).build(),
-                Role.builder().name(RoleEnum.ROLE_EMPLOYEE.toString()).users(Arrays.asList(user)).build(),
-                Role.builder().name(RoleEnum.ROLE_MEMBER.toString()).users(Arrays.asList(user)).build()
+                new Role(RoleEnum.ROLE_ADMIN.toString(),Arrays.asList(user)),
+                new Role(RoleEnum.ROLE_EMPLOYEE.toString(),Arrays.asList(user)),
+                new Role(RoleEnum.ROLE_MEMBER.toString(),Arrays.asList(user))
         );
         for (int i = 0; i < roles.size(); ++i) {
             if (roleRepository.findByName(roles.get(i).getName()) == null) {

@@ -9,7 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Data
-@Builder
 public class RatingDTO extends BaseDTO {
     public int score;
 

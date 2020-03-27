@@ -7,12 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Data
-@Builder
-public class ProductDTO extends BaseDTO {
+public class ProductDTO{
+    private Long id;
     public String name;
 
     public String code;
@@ -23,32 +24,33 @@ public class ProductDTO extends BaseDTO {
     public String image;
     public String description;
 
-    public CategoryDTO category;
+    public CategoryDTO category = new CategoryDTO();
 
     public Long categoryId;
 
-    public List<VersionDTO> versions;
+    public List<VersionDTO> versions = new ArrayList<>();
 
 //    public List<CartItemDTO> cartItems;
 
-    public ProducerDTO producer;
+    public ProducerDTO producer = new ProducerDTO();
 
     public Long producerId;
 
-    public AmountDTO amount;
+    public AmountDTO amount = new AmountDTO();
 
     public Long amountId;
 
-    public FragrantDTO fragrant;
+    public FragrantDTO fragrant = new FragrantDTO();
 
     public Long fragrantId;
 
-    private List<TargetDTO> targets;
+    private List<TargetDTO> targets = new ArrayList<>();
 
     public ProductDTO() {
     }
 
-    public ProductDTO(String name, String code, String highlight, String gender, Date MFG, Date EXP, String image, String description, CategoryDTO category, Long categoryId, List<VersionDTO> versions, ProducerDTO producer, Long producerId, AmountDTO amount, Long amountId, FragrantDTO fragrant, Long fragrantId, List<TargetDTO> targets) {
+    public ProductDTO(Long id, String name, String code, String highlight, String gender, Date MFG, Date EXP, String image, String description, CategoryDTO category, Long categoryId, List<VersionDTO> versions, ProducerDTO producer, Long producerId, AmountDTO amount, Long amountId, FragrantDTO fragrant, Long fragrantId, List<TargetDTO> targets) {
+        this.id = id;
         this.name = name;
         this.code = code;
         this.highlight = highlight;

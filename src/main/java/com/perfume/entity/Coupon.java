@@ -1,6 +1,7 @@
 package com.perfume.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Data
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class Coupon extends BaseEntity {
 
     @Column(unique=true)
@@ -19,4 +21,7 @@ public class Coupon extends BaseEntity {
 
     @OneToMany(mappedBy = "coupon")
     List<Checkout> checkouts;
+
+    public Coupon() {
+    }
 }

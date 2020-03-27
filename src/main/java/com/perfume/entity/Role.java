@@ -3,12 +3,12 @@ package com.perfume.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Data
-@Builder
 @Entity
 public class Role {
     @Id
@@ -26,6 +26,11 @@ public class Role {
 
     public Role(Long id, String name, List<User> users) {
         this.id = id;
+        this.name = name;
+        this.users = users;
+    }
+
+    public Role(String name, List<User> users) {
         this.name = name;
         this.users = users;
     }
