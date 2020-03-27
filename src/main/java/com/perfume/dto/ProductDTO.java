@@ -44,4 +44,28 @@ public class ProductDTO extends BaseDTO {
     public Long fragrantId;
 
     private List<TargetDTO> targets;
+
+    public ProductDTO() {
+    }
+
+    public ProductDTO(String name, String code, String highlight, String gender, Date MFG, Date EXP, String image, String description, CategoryDTO category, Long categoryId, List<VersionDTO> versions, ProducerDTO producer, Long producerId, AmountDTO amount, Long amountId, FragrantDTO fragrant, Long fragrantId, List<TargetDTO> targets) {
+        this.name = name;
+        this.code = code;
+        this.highlight = highlight;
+        this.gender = gender;
+        this.MFG = MFG;
+        this.EXP = EXP;
+        this.image = image;
+        this.description = description;
+        this.category = category;
+        this.categoryId = categoryId;
+        this.versions = versions;
+        this.producer = producer;
+        this.producerId = producerId;
+        this.amount = amount;
+        this.amountId = amountId;
+        this.fragrant = fragrant;
+        this.fragrantId = fragrantId;
+        this.targets = targets;
+    }
 }
