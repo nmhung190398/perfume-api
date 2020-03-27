@@ -6,9 +6,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
@@ -18,16 +21,30 @@ public class UploadFileUtil {
     @Value("${file.upload-dir}")
     public String uploadFolder;
 
-    public boolean saveFile(String base64Image, String fileName) {
+    public String saveFile(String base64Image, String fileName) {
         byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
+        InputStream is = new ByteArrayInputStream(decodedBytes);
+
+        //Find out image type
+        String fileExtension = ".jpeg";
+        try {
+            String mimeType = URLConnection.guessContentTypeFromStream(is); //mimeType is something like "image/jpeg"
+            String delimiter="[/]";
+            String[] tokens = mimeType.split(delimiter);
+            fileExtension = "." + tokens[1];
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        fileName += fileExtension;
         String filePath = getFilePath(uploadFolder, fileName);
         try {
             FileUtils.writeByteArrayToFile(new File(filePath), decodedBytes);
-            return true;
+            return fileName;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return "";
     }
 
     public String getFilePath(String uploadFolder, String fileName) {
@@ -35,10 +52,11 @@ public class UploadFileUtil {
     }
 
     public Resource loadFileAsResource(String fileName) {
+        String filePathAbsolute = getFilePath(uploadFolder, fileName);
         Path fileStorageLocation = Paths.get(uploadFolder)
                 .toAbsolutePath().normalize();
         try {
-            Path filePath = fileStorageLocation.resolve(fileName).normalize();
+            Path filePath = fileStorageLocation.resolve(filePathAbsolute).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if(resource.exists()) {
                 return resource;
