@@ -4,9 +4,9 @@ import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -18,12 +18,16 @@ public class Product extends BaseEntity {
     public String name;
 
     @Column(unique = true)
-    public String code;
-    public String highlight;
-    public String gender;
-    public Date MFG;
-    public Date EXP;
     @QueryField
+    public String code;
+    @QueryField
+    public String highlight;
+    @QueryField
+    public String gender;
+    @QueryField
+    public Date MFG;
+    @QueryField
+    public Date EXP;
     public String image;
     @Lob
     public String description;

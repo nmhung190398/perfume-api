@@ -1,5 +1,7 @@
 package com.perfume.constant;
 
-public interface Const {
+import org.springframework.beans.factory.annotation.Value;
+
+public class Const {
 
 }
