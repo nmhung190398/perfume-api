@@ -1,7 +1,9 @@
 package com.perfume.util;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,17 @@ public class UploadFileUtil {
     @Value("${file.upload-dir}")
     public String uploadFolder;
 
+    @Autowired
+    private Environment env;
+
+    public UploadFileUtil() {
+//        try {
+//            uploadFolder = new File(".").getCanonicalPath() + env.getProperty("file.upload-dir");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
+
     public String saveFile(String base64Image, String fileName) {
         byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
         InputStream is = new ByteArrayInputStream(decodedBytes);
@@ -38,6 +51,10 @@ public class UploadFileUtil {
 
         fileName += fileExtension;
         String filePath = getFilePath(uploadFolder, fileName);
+        File file = new File(uploadFolder);
+        if(!file.exists()){
+            file.mkdirs();
+        }
         try {
             FileUtils.writeByteArrayToFile(new File(filePath), decodedBytes);
             return fileName;

@@ -2,6 +2,7 @@ package com.perfume.entity;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -10,8 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 @Data
-@Builder
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class Target extends BaseEntity {
 
     public Target() {
@@ -28,5 +29,7 @@ public class Target extends BaseEntity {
     @ManyToMany(mappedBy = "targets")
     private Set<Product> products;
 
-
+    public Target(String name) {
+        this.name = name;
+    }
 }

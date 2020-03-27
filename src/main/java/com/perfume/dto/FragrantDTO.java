@@ -8,10 +8,18 @@ import javax.persistence.OneToMany;
 import java.util.List;
 
 @Data
-@Builder
-public class FragrantDTO extends BaseDTO {
+public class FragrantDTO {
+    private Long id;
     public String name;
     public String description;
 
-//    public List<Product> products;
+    public FragrantDTO(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public FragrantDTO() {
+    }
+
+    //    public List<Product> products;
 }

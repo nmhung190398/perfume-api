@@ -7,7 +7,6 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Data
-@Builder
 public class CheckoutItemDTO extends BaseDTO {
 
     public Long userId;

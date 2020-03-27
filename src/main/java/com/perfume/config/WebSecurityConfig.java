@@ -6,6 +6,7 @@ import com.perfume.sercurity.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,10 +17,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -38,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception{
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception {
         return new JwtAuthenticationEntryPoint();
     }
 
@@ -57,12 +63,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.cors().configurationSource((httpServletRequest -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedHeaders(Collections.singletonList("*"));
+            config.setAllowedMethods(Collections.singletonList("*"));
+            config.addAllowedOrigin("*");
+            config.setAllowCredentials(true);
+            return config;
+        })).and()
+                .csrf().disable()
 
-        httpSecurity.csrf().disable()
-
-                .authorizeRequests().antMatchers("/api/login","/api/user/add", "/api/**").permitAll().
-
-                anyRequest().authenticated().and().
+                .authorizeRequests()
+//                .antMatchers("/api/login","/api/user/add", "/api/**").permitAll().
+                .antMatchers("/api/login","/api/product/image/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/api/**/filter").permitAll()
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .anyRequest().authenticated().and().
 
                 exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 
