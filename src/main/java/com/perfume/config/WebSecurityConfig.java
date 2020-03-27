@@ -6,6 +6,7 @@ import com.perfume.sercurity.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -24,7 +25,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -43,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception{
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception {
         return new JwtAuthenticationEntryPoint();
     }
 
@@ -72,9 +73,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         })).and()
                 .csrf().disable()
 
-                .authorizeRequests().antMatchers("/api/login","/api/user/add", "/api/**").permitAll().
-
-                anyRequest().authenticated().and().
+                .authorizeRequests()
+//                .antMatchers("/api/login","/api/user/add", "/api/**").permitAll().
+                .antMatchers("/api/login","/api/product/image/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/api/**/filter").permitAll()
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .anyRequest().authenticated().and().
 
                 exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 

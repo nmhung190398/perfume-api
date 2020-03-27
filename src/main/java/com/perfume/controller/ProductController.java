@@ -40,21 +40,28 @@ public class ProductController {
     private final String imgHash = "/api/product/image/";
 
     @PostMapping("")
-    public ResponseEntity<Product> create(@RequestBody Product body) {
+    public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO body)  {
         if (body.code == null || body.code.equals("")) {
             throw new ValidationException("code required");
         }
         if (productRepository.existsByCode(body.getCode())) {
             throw new ValidationException("code already existed");
         }
-        String imageUrl = upload(body.image, body.code);
-        if (imageUrl.equals("")) {
-            throw new ValidationException("invalid image type for base64");
-        }
-        body.setImage(imgHash+imageUrl);
-        body.setStatus(StatusEnum.ACTIVE.getValue());
+        if(body.imageBase64 != null){
+            String imageUrl = upload(body.imageBase64, body.code);
+            if (imageUrl.equals("")) {
+                throw new ValidationException("invalid image type for base64");
+            }
+            body.setImage(imgHash+imageUrl);
 
-        productRepository.save(body);
+        }
+        body.setStatus(StatusEnum.ACTIVE.getValue());
+        body.setId(null);
+        Product product = productMapper.toEntity(body);
+        product.getVersions().forEach(item ->{
+            item.setProduct(product);
+        });
+        productRepository.save(product);
         return ResponseEntity.ok(body);
     }
 

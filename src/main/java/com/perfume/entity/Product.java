@@ -31,47 +31,45 @@ public class Product extends BaseEntity {
     @Lob
     public String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     public Category category;
 
 //    @QueryField(name = "category.id")
 //    @Column(name = "category_id", updatable = false, insertable = false)
-//    public Long categoryId;
+//    public Long category_id;
 
 
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "producer_id")
     public Producer producer;
 
 //    @QueryField(name = "producer.id")
 //    @Column(name = "producer_id", updatable = false, insertable = false)
-//    public Long producerId;
+//    public Long producer_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "amount_id")
     public Amount amount;
 
 //    @QueryField(name = "amount.id")
 //    @Column(name = "amount_id", updatable = false, insertable = false)
-//    public Long amountId;
+//    public Long amount_id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fragrant_id")
     public Fragrant fragrant;
 
 //    @QueryField(name = "fragrant.id")
 //    @Column(name = "fragrant_id", updatable = false, insertable = false)
-//    public Long fragrantId;
+//    public Long fragrant_id;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "product_target")
     private List<Target> targets;
 
 
-    @OneToMany(mappedBy = "product",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product",fetch = FetchType.LAZY,cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     public List<Version> versions;
 
     public Product() {
