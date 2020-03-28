@@ -19,7 +19,7 @@ public class Checkout extends BaseEntity {
     @JoinColumn(name = "coupon_id")
     public Coupon coupon;
 
-    @OneToMany(mappedBy = "checkout")
+    @OneToMany(mappedBy = "checkout",cascade = CascadeType.PERSIST)
     public List<CheckoutItem> checkoutItems;
 
     public Checkout() {

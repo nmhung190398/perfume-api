@@ -1,6 +1,7 @@
 package com.perfume;
 
 import com.perfume.constant.RoleEnum;
+import com.perfume.constant.StatusEnum;
 import com.perfume.constant.TargetEnum;
 import com.perfume.dto.mapper.UserMapper;
 import com.perfume.entity.*;
@@ -58,27 +59,28 @@ public class Application implements CommandLineRunner {
         user.setEmail("nmhung190398@gmail.com");
         user.setFirstname("hung");
         user.setFirstname("nguyen");
+        user.setStatus(StatusEnum.ACTIVE.getValue());
 
         List<Target> targets = Arrays.asList(
 
-                new Target(TargetEnum.MALE.getValue()),
-                new Target(TargetEnum.FEMALE.getValue()),
-                new Target(TargetEnum.GAY.getValue()),
-                new Target(TargetEnum.LES.getValue()),
-                new Target(TargetEnum.CAR.getValue())
+                new Target(TargetEnum.MALE.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.FEMALE.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.GAY.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.LES.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.CAR.getValue(), StatusEnum.ACTIVE.getValue())
         );
 
-        for (Target target:
-             targets) {
+        for (Target target :
+                targets) {
             if (targetRepository.findByName(target.getName()) == null) {
                 targetRepository.save(target);
             }
         }
 
         List<Role> roles = Arrays.asList(
-                new Role(RoleEnum.ROLE_ADMIN.toString(),Arrays.asList(user)),
-                new Role(RoleEnum.ROLE_EMPLOYEE.toString(),Arrays.asList(user)),
-                new Role(RoleEnum.ROLE_MEMBER.toString(),Arrays.asList(user))
+                new Role(RoleEnum.ROLE_ADMIN.toString(), Arrays.asList(user)),
+                new Role(RoleEnum.ROLE_EMPLOYEE.toString(), Arrays.asList(user)),
+                new Role(RoleEnum.ROLE_MEMBER.toString(), Arrays.asList(user))
         );
         for (int i = 0; i < roles.size(); ++i) {
             if (roleRepository.findByName(roles.get(i).getName()) == null) {
@@ -94,7 +96,8 @@ public class Application implements CommandLineRunner {
         testMapper();
 
     }
-    public void testMapper(){
+
+    public void testMapper() {
 //        Product product = Product.builder().categoryId(1L).build();
 //        List<Product> list = productRepository.find(product);
 //        User user = User.builder().username("admin").password(new BCryptPasswordEncoder().encode("123456"))

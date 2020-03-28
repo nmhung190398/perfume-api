@@ -1,5 +1,6 @@
 package com.perfume.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -9,11 +10,12 @@ public class CartItemDTO extends BaseDTO {
 
     public Long userId;
 
-    public Long productId;
+    public Long versionId;
 
     public int quantity;
 
-//    public UserDTO user;
+    @JsonIgnore
+    public UserDTO user;
 
-    public ProductDTO product;
+    public VersionDTO version;
 }

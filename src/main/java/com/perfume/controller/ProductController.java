@@ -5,6 +5,7 @@ import com.perfume.dto.PagingDTO;
 import com.perfume.dto.ProductDTO;
 import com.perfume.dto.ResponsePaging;
 import com.perfume.dto.mapper.ProductMapper;
+import com.perfume.dto.search.ProductSearch;
 import com.perfume.entity.Product;
 import com.perfume.repository.ProductRepository;
 import com.perfume.util.UploadFileUtil;
@@ -108,7 +109,7 @@ public class ProductController {
     // end crud
 
     @PostMapping("/filter")
-    public ResponseEntity<List<ProductDTO>> filter(@RequestBody Product body) {
+    public ResponseEntity<List<ProductDTO>> filter(@RequestBody ProductSearch body) {
         body.setStatus(StatusEnum.ACTIVE.getValue());
         List<Product> products = productRepository.find(body);
 
@@ -118,7 +119,7 @@ public class ProductController {
     }
 
     @PostMapping("/filter/{page}/{limit}")
-    public ResponseEntity<ResponsePaging<ProductDTO>> filterPage(@RequestBody Product body, @PathVariable int page, @PathVariable int limit) {
+    public ResponseEntity<ResponsePaging<ProductDTO>> filterPage(@RequestBody ProductSearch body, @PathVariable int page, @PathVariable int limit) {
         body.setStatus(StatusEnum.ACTIVE.getValue());
         Pageable paging = PageRequest.of(page - 1, limit);
         Page<Product> pagedResult = productRepository.findPage(body, paging);

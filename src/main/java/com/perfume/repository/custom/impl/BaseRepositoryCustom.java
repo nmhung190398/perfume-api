@@ -88,19 +88,21 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
     }
 
     @Override
-    public List<E> find(E e) {
-        ResponseBaseDAO responseBaseDAO = super.createQuery(e);
-        Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
-        responseBaseDAO.getValues().forEach(query::setParameter);
-        List<E> list = query.getResultList();
+    public List<E> find(Object e) {
+        List<E> list = findBase(e).getResultList();
         return list;
     }
 
-    @Override
-    public Page<E> findPage(E e, Pageable pageable) {
+    protected Query findBase(Object e){
         ResponseBaseDAO responseBaseDAO = super.createQuery(e);
         Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
         responseBaseDAO.getValues().forEach(query::setParameter);
+        return query;
+    }
+
+    @Override
+    public Page<E> findPage(Object e, Pageable pageable) {
+        Query query = findBase(e);
         query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         query.setMaxResults(pageable.getPageSize());
 
@@ -110,7 +112,7 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
     }
 
     @Override
-    public Long count(E e) {
+    public Long count(Object e) {
         ResponseBaseDAO responseBaseDAO = super.createQueryCount(e);
         Query query = entityManager.createQuery(responseBaseDAO.getSql(), Long.class);
         responseBaseDAO.getValues().forEach(query::setParameter);
@@ -119,7 +121,7 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
 
     @Override
     @Transactional
-    public boolean update(E e) {
+    public boolean update(Object e) {
         ResponseBaseDAO responseBaseDAO = super.createUpdate(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());//        String sql = String.join(" ", "SELECT", asName, "FROM", nameTable, asName, " ");
         responseBaseDAO.getValues().forEach(query::setParameter);
@@ -129,7 +131,7 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
 
     @Override
     @Transactional
-    public boolean updateFull(E e) {
+    public boolean updateFull(Object e) {
         ResponseBaseDAO responseBaseDAO = super.createUpdateFull(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
         responseBaseDAO.getValues().forEach(query::setParameter);

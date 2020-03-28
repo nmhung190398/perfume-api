@@ -25,6 +25,7 @@ public class ProductMapper extends AbstractConver<Product, ProductDTO> {
     @Override
     public ProductDTO toDTO(Product entity) {
         ProductDTO toDTO = super.toDTO(entity);
+        entity.setHighlight(entity.highlight.toUpperCase());
         toDTO.setHighlights(super.converToArray(entity.getHighlight()));
         return toDTO;
     }
@@ -33,6 +34,7 @@ public class ProductMapper extends AbstractConver<Product, ProductDTO> {
     public Product toEntity(ProductDTO dto) {
         Product toEntity = super.toEntity(dto);
         toEntity.setHighlight(super.converToString(dto.getHighlights()));
+        toEntity.setHighlight(toEntity.highlight.toUpperCase());
         return toEntity;
     }
 }
