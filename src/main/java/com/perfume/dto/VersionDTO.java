@@ -13,6 +13,7 @@ public class VersionDTO {
     public String name;
     public long price;
     public int total;
+    public Long productId;
 //    public ProductDTO product;
 
 

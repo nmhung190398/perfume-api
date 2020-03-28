@@ -36,6 +36,7 @@ public class User extends BaseEntity {
     @JoinTable(name = "user_role")
     public List<Role> roles;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     public List<CartItem> cartItems;
 

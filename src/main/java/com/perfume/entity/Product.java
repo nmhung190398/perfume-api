@@ -2,6 +2,7 @@ package com.perfume.entity;
 
 import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.TableName;
+import com.perfume.dto.search.ProductSearch;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Data
 @Entity
-@TableName
+@TableName(searchClass = ProductSearch.class)
 @EqualsAndHashCode(callSuper = true)
 public class Product extends BaseEntity {
     public String name;

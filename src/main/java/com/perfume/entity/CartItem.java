@@ -1,6 +1,9 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.QueryField;
+import com.nmhung.anotation.TableName;
 import com.perfume.dto.BaseDTO;
+import com.perfume.dto.search.CartItemSearch;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,16 +12,13 @@ import javax.persistence.*;
 
 @Data
 @Entity
+@TableName(searchClass = CartItemSearch.class)
 @EqualsAndHashCode(callSuper = true)
 public class CartItem extends BaseEntity {
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    public Long userId;
 
-    @Column(name = "version_product_id", insertable = false, updatable = false)
-    public Long versionProductId;
-
-    public int quantity;
+    @QueryField
+    public Integer quantity;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,11 +31,5 @@ public class CartItem extends BaseEntity {
     public CartItem() {
     }
 
-    public CartItem(Long userId, Long versionProductId, int quantity, User user, Version version) {
-        this.userId = userId;
-        this.versionProductId = versionProductId;
-        this.quantity = quantity;
-        this.user = user;
-        this.version = version;
-    }
+
 }

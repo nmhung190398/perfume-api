@@ -1,5 +1,6 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ import java.util.Set;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
+@TableName
 public class Target extends BaseEntity {
 
     public Target() {
@@ -31,5 +33,9 @@ public class Target extends BaseEntity {
 
     public Target(String name) {
         this.name = name;
+    }
+    public Target(String name,int status) {
+        this.name = name;
+        this.setStatus(status);
     }
 }

@@ -20,15 +20,15 @@ public class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @QueryField(id = true)
-    private Long id;
+    protected Long id;
 
     @QueryField
     @JsonIgnore
-    private Integer status;
+    protected Integer status;
     @QueryField
-    private Date createdAt;
+    protected Date createdAt;
     @QueryField
-    private Date updatedAt;
+    protected Date updatedAt;
 
     public BaseEntity() {
     }
