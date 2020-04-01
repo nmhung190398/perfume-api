@@ -4,6 +4,7 @@ package com.perfume.dto.search;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.SearchClass;
+import com.perfume.dto.OderBy;
 import lombok.Data;
 
 import java.util.Date;
@@ -56,5 +57,5 @@ public class ProductSearch {
 
     public Long versionId;
 
-
+    public OderBy oderBy;
 }

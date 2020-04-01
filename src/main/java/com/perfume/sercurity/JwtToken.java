@@ -1,12 +1,18 @@
 package com.perfume.sercurity;
 
+import com.perfume.entity.User;
+import com.perfume.repository.UserRepository;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 
+import javax.jws.soap.SOAPBinding;
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +28,8 @@ public class JwtToken implements Serializable {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Autowired
+    UserRepository userRepository;
 
     public String getUsernameFromToken(String token) {
 
@@ -48,6 +56,14 @@ public class JwtToken implements Serializable {
     private Claims getAllClaimsFromToken(String token) {
 
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+
+    }
+
+    public User getUserLogin(HttpServletRequest request){
+        final String requestTokenHeader = request.getHeader("Authorization");
+        String jwtToken = requestTokenHeader.substring(7);
+        String username = this.getUsernameFromToken(jwtToken);
+        return userRepository.findByUsername(username);
 
     }
 

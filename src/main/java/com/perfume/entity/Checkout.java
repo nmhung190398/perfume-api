@@ -13,14 +13,34 @@ import java.util.List;
 public class Checkout extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "coupon_id")
-    public Coupon coupon;
+    private Coupon coupon;
 
     @OneToMany(mappedBy = "checkout",cascade = CascadeType.PERSIST)
-    public List<CheckoutItem> checkoutItems;
+    private List<CheckoutItem> checkoutItems;
+
+    @Column
+    private Integer paymentMethod;
+
+    @Column
+    private String address;
+
+    @Column
+    private String email;
+
+    @Column String phone;
+
+    @Column
+    private Integer provinceId;
+
+    @Column
+    private Integer districtId;
+
+    @Column
+    private Integer wardId;
 
     public Checkout() {
     }

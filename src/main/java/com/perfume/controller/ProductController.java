@@ -127,6 +127,9 @@ public class ProductController {
         if (pagedResult.hasContent()) {
             products = pagedResult.getContent().stream().map(productMapper::toDTO).collect(Collectors.toList());
         }
+
+
+
         PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(products, pagingDTO));
     }
