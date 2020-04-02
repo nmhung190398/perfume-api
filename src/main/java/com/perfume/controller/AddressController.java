@@ -1,6 +1,7 @@
 package com.perfume.controller;
 
 
+import com.perfume.dto.AddressDTO;
 import com.perfume.entity.District;
 import com.perfume.entity.Province;
 import com.perfume.entity.Ward;
@@ -42,5 +43,13 @@ public class AddressController {
     @GetMapping("/ward/{districtId}")
     ResponseEntity<List<Ward>> findByWard(@PathVariable Integer districtId) {
         return ResponseEntity.ok(wardRepository.findByDistrictId(districtId));
+    }
+
+    @GetMapping("/{wardId}")
+    ResponseEntity<AddressDTO> find(@PathVariable Integer wardId){
+        Ward ward = wardRepository.findById(wardId).get();
+        District district = districtRepository.findById(ward.getDistrictId()).get();
+        Province province = provinceRepository.findById(district.getProvinceId()).get();
+        return ResponseEntity.ok(new AddressDTO(province,district,ward));
     }
 }

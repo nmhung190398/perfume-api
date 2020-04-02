@@ -23,7 +23,6 @@ public class BaseEntity {
     protected Long id;
 
     @QueryField
-    @JsonIgnore
     protected Integer status;
     @QueryField
     protected Date createdAt;

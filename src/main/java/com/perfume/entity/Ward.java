@@ -26,6 +26,4 @@ public class Ward {
 
     @Column(name = "_district_id")
     private Integer districtId;
-
-
 }

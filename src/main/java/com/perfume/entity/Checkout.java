@@ -1,5 +1,7 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.QueryField;
+import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
+@TableName
 public class Checkout extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -19,28 +22,47 @@ public class Checkout extends BaseEntity {
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
 
-    @OneToMany(mappedBy = "checkout",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "checkout", cascade = CascadeType.PERSIST)
     private List<CheckoutItem> checkoutItems;
 
     @Column
+    @QueryField
     private Integer paymentMethod;
 
     @Column
+    @QueryField
     private String address;
 
     @Column
+    @QueryField
     private String email;
 
-    @Column String phone;
+    @QueryField
+    @Column
+    String phone;
 
     @Column
+    @QueryField
     private Integer provinceId;
 
     @Column
+    @QueryField
     private Integer districtId;
 
     @Column
+    @QueryField
     private Integer wardId;
+
+    @Column
+    @Lob
+    @QueryField
+    private String note;
+
+    @Column
+    private String firstname;
+
+    @Column
+    private String lastname;
 
     public Checkout() {
     }

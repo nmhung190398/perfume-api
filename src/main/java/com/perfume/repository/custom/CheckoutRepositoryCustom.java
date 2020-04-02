@@ -1,4 +1,9 @@
 package com.perfume.repository.custom;
 
-public interface CheckoutRepositoryCustom {
+
+import com.perfume.entity.Checkout;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CheckoutRepositoryCustom extends BaseRepository<Checkout>{
 }
