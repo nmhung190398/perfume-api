@@ -13,6 +13,8 @@ public class ResponseMsg<T> {
     }
 
     public ResponseMsg() {
+        this.data = null;
+        this.status = 400;
     }
 
     public T getData() {

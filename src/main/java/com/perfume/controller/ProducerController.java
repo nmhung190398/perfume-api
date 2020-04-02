@@ -64,7 +64,7 @@ public class ProducerController {
         }
 
         return ResponseEntity.ok(
-                new ResponsePaging<>(producers, new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset()))
+                new ResponsePaging<>(producers, new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset()))
         );
     }
 
@@ -98,7 +98,7 @@ public class ProducerController {
         if (pagedResult.hasContent()) {
             producers = pagedResult.getContent().stream().map(producerMapper::toDTO).collect(Collectors.toList());
         }
-        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(producers, pagingDTO));
     }
 }

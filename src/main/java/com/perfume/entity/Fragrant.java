@@ -1,5 +1,6 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @EqualsAndHashCode(callSuper = true)
+@TableName
 public class Fragrant extends BaseEntity {
     public String name;
     public String description;

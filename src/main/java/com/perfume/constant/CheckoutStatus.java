@@ -15,4 +15,27 @@ public enum CheckoutStatus {
     public int getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        String rs = "Hủy đơn";
+        if (this.value == 1) {
+            rs = " Tạo đơn ";
+        } else if (value == 2) {
+            rs = " Vận chuyển";
+        } else if (value == 3) {
+            rs = " Hoàn Thàng";
+
+        }
+        return rs;
+    }
+
+    public static CheckoutStatus getCheckoutStatus(int value) {
+        for (CheckoutStatus checkoutStatus : values()) {
+            if (checkoutStatus.value == value) {
+                return checkoutStatus;
+            }
+        }
+        return null;
+    }
 }

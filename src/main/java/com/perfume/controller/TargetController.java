@@ -64,7 +64,7 @@ public class TargetController {
         }
 
         return ResponseEntity.ok(
-                new ResponsePaging<>(targets, new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset()))
+                new ResponsePaging<>(targets, new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset()))
         );
     }
 
@@ -98,7 +98,7 @@ public class TargetController {
         if (pagedResult.hasContent()) {
             targets = pagedResult.getContent().stream().map(targetMapper::toDTO).collect(Collectors.toList());
         }
-        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(targets, pagingDTO));
     }
 }

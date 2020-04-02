@@ -41,6 +41,7 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
 //        this.asName = asName;
     }
 
+
     private Map<String, Object> toMap(MultiValueMap<String, Object> multiValueMap) {
         Map<String, Object> map = new HashMap<>();
         multiValueMap.forEach((s, objects) -> {
