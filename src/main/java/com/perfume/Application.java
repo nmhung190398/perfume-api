@@ -105,18 +105,15 @@ public class Application implements CommandLineRunner {
 
     }
 
-    public void sendMail(){
+    public void sendMail() {
         Checkout checkout = new Checkout();
         checkout.setEmail("manhhung19031998@gmail.com");
         checkout.setAddress("hdz");
         checkout.setFirstname("HDZ");
         checkout.setLastname("ahihi");
 
-        try {
-            mailUtils.send(checkout);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        mailUtils.send(checkout);
+
     }
 
     public void testMapper() {

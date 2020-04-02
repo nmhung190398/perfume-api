@@ -67,7 +67,18 @@ public class MailUtils {
         return rs;
     }
 
-    public void send(Checkout checkout) throws AddressException, MessagingException {
+    public void send(Checkout checkout) {
+        Thread thread = new Thread(() -> {
+            try {
+                this.sendHtml(checkout);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    private void sendHtml(Checkout checkout) throws AddressException, MessagingException {
 
         // Step2: get Mail Session
         getMailSession = Session.getDefaultInstance(mailServerProperties, null);
@@ -78,9 +89,12 @@ public class MailUtils {
         // Bạn có thể chọn CC, BCC
 //    generateMailMessage.addRecipient(Message.RecipientType.CC, new InternetAddress("cc@gmail.com")); //Địa chỉ cc gmail
 
-        mailMessage.setSubject("Perfume");
+        mailMessage.setSubject("Trạng thái đơn hàng - Perfume","utf-8");
         String emailBody = "<h1>Đơn hàng đã được " + checkout.getStatus() + " </h1>";
-        mailMessage.setContent(emailBody, "text/html");
+        if (checkout.getNote() != null) {
+            emailBody += "<p>Lý do: " + checkout.getNote() + "</p>";
+        }
+        mailMessage.setContent(emailBody, "text/html; charset=utf-8");
 
         // Step3: Send mail
         Transport transport = getMailSession.getTransport("smtp");

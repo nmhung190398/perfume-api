@@ -10,6 +10,7 @@ import com.perfume.dto.mapper.CheckoutMapper;
 import com.perfume.entity.*;
 import com.perfume.repository.*;
 import com.perfume.sercurity.JwtToken;
+import com.perfume.util.MailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -53,6 +55,9 @@ public class CheckoutController {
     @Autowired
     private CheckoutMapper checkoutMapper;
 
+    @Autowired
+    MailUtils mailUtils;
+
 
 //    @PutMapping("/delivery/{id}")
 //    public ResponseEntity<ResponseMsg<Object>> changeStatusDelivery(@PathVariable Long id) {
@@ -80,8 +85,12 @@ public class CheckoutController {
             if (tmp.getStatus() == CheckoutStatus.DELETED.getValue()) {
                 tmp.setNote(body.getNote());
             }
-            rs = checkoutRepository.save(tmp) != null;
-        }else{
+            tmp = checkoutRepository.save(tmp);
+            if (tmp != null) {
+                mailUtils.send(tmp);
+            }
+            rs = tmp != null;
+        } else {
             rs = checkoutRepository.update(body);
 
         }
@@ -121,8 +130,10 @@ public class CheckoutController {
             }).collect(Collectors.toList());
             checkout.setCheckoutItems(checkoutItems);
             checkout.setUser(user);
+            Checkout tmp = checkoutRepository.save(checkout);
+            if (tmp != null) {
+                mailUtils.send(tmp);
 
-            if (checkoutRepository.save(checkout) != null) {
                 cartItemRepository.deleteAll(carts);
 
                 this.updateTotalSold(checkoutItems);

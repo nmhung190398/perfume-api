@@ -8,6 +8,7 @@ import com.perfume.entity.Ward;
 import com.perfume.repository.DistrictRepository;
 import com.perfume.repository.ProvinceRepository;
 import com.perfume.repository.WardRepository;
+import com.perfume.util.MailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,9 @@ public class AddressController {
 
     @Autowired
     WardRepository wardRepository;
+
+    @Autowired
+    MailUtils mailUtils;
 
     @GetMapping("/province")
     ResponseEntity<List<Province>> findByProvince() {
