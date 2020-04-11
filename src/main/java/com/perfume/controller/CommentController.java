@@ -51,7 +51,6 @@ public class CommentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMsg<Comment>> update(@RequestBody Comment body, @PathVariable Long id) {
-        body.setStatus(null);
         body.setId(id);
         commentRepository.update(body);
         return ResponseEntity.ok(new ResponseMsg<>(body, 200, ""));
@@ -105,7 +104,9 @@ public class CommentController {
 
     @PostMapping("/filter/{page}/{limit}")
     public ResponseEntity<ResponsePaging<CommentDTO>> filterPage(@RequestBody Comment body, @PathVariable int page, @PathVariable int limit) {
-        body.setStatus(StatusEnum.ACTIVE.getValue());
+        if(body.getStatus() == null){
+            body.setStatus(StatusEnum.ACTIVE.getValue());
+        }
         Pageable paging = PageRequest.of(page - 1, limit);
 
 

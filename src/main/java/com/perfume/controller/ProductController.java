@@ -16,6 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,15 +66,42 @@ public class ProductController {
             item.setStatus(StatusEnum.ACTIVE.getValue());
             item.setProduct(product);
         });
-        productRepository.save(product);
+        body = productMapper.toDTO(productRepository.save(product));
         return ResponseEntity.ok(body);
     }
 
-    @PutMapping("")
-    public ResponseEntity<String> update(@RequestBody Product body) {
-        body.setStatus(null);
-        productRepository.update(body);
-        return ResponseEntity.ok("Update Success");
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseMsg<ProductDTO>> update(@RequestBody ProductDTO body,@PathVariable Long id) {
+        ResponseMsg<ProductDTO> responseMsg = new ResponseMsg<>();
+        if (!productRepository.existsById(id)) {
+            responseMsg.setMsg("Không tồn tại sản phẩn");
+            ResponseEntity.ok(responseMsg);
+        }
+        body.setId(id);
+        if (productRepository.existsByCodeAndIdNot(body.getCode(),body.getId())) {
+            responseMsg.setMsg("Trùng URI");
+            ResponseEntity.ok(responseMsg);
+        }
+
+        if (body.imageBase64 != null) {
+            String imageUrl = upload(body.imageBase64, body.code);
+            if (imageUrl.equals("")) {
+                throw new ValidationException("invalid image type for base64");
+            }
+            body.setImage(imgHash + imageUrl);
+        }
+
+        Product product = productMapper.toEntity(body);
+        product.getVersions().forEach(item -> {
+            if (item.getId() == null) {
+                item.setStatus(StatusEnum.ACTIVE.getValue());
+            }
+            item.setProduct(product);
+        });
+        body = productMapper.toDTO(productRepository.save(product));
+        responseMsg.setStatus(200);
+        responseMsg.setData(body);
+        return ResponseEntity.ok(responseMsg);
     }
 
     @Transactional
@@ -108,7 +136,7 @@ public class ProductController {
         productSearch.setCode(code);
 
         List<Product> products = productRepository.find(productSearch);
-        if(products.size() > 0){
+        if (products.size() > 0) {
             responseMsg.setStatus(200);
             responseMsg.setData(productMapper.toDTO(products.get(0)));
         }

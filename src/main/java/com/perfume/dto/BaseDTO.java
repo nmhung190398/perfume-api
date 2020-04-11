@@ -15,7 +15,7 @@ import java.util.Date;
 @Data
 public class BaseDTO {
     private Long id;
-    @JsonIgnore
+//    @JsonIgnore
     private Integer status;
     private Date createdAt;
     private Date updatedAt;
