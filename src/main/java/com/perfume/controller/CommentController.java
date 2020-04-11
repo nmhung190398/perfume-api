@@ -137,6 +137,4 @@ public class CommentController {
         PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(comments, pagingDTO));
     }
-
-
 }

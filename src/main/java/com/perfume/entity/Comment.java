@@ -15,7 +15,7 @@ import java.util.List;
 @TableName
 public class Comment extends BaseEntity {
 
-    @Lob
+    @Column(columnDefinition="TEXT")
     public String content;
 
     @QueryField
@@ -26,6 +26,7 @@ public class Comment extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "paren_comment_id")
+    @QueryField(name = "parenComment.id")
     public Comment parenComment;
 
     @OneToMany(mappedBy = "parenComment")
