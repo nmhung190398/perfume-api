@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> implements BaseRepository<E> {
 //    protected String nameTable = getType(0).getName();
 //
@@ -128,8 +129,8 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());//        String sql = String.join(" ", "SELECT", asName, "FROM", nameTable, asName, " ");
         responseBaseDAO.getValues().forEach(query::setParameter);
         int rs = query.executeUpdate();
-//        this.entityManager.getTransaction().commit();
-//        this.entityManager.close();
+
+
         return rs > 0;
     }
 

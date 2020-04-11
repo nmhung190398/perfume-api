@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,6 +76,7 @@ public class ProductController {
         return ResponseEntity.ok("Update Success");
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         productRepository.changeStatus(id, StatusEnum.DELETED.getValue());

@@ -19,4 +19,8 @@ public class BaseDTO {
     private Integer status;
     private Date createdAt;
     private Date updatedAt;
+
+    protected String createdBy;
+
+    protected String lastModifiedBy;
 }

@@ -1,29 +1,24 @@
-package com.perfume.sercurity;
+package com.perfume.sercurity.mail;
 
 import com.perfume.entity.User;
 import com.perfume.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpRequest;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 
-import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@Component
-public class JwtToken implements Serializable {
+public class MailToken {
     private static final long serialVersionUID = -2550185165626007488L;
 
-    public static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60;
+    public static final long JWT_TOKEN_VALIDITY = 24 * 60;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -31,8 +26,7 @@ public class JwtToken implements Serializable {
     @Autowired
     UserRepository userRepository;
 
-    public String getUsernameFromToken(String token) {
-
+    public String getDataFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
 
     }
@@ -57,13 +51,14 @@ public class JwtToken implements Serializable {
 
     }
 
-    public User getUserLogin(HttpServletRequest request){
-        final String requestTokenHeader = request.getHeader("Authorization");
-        String jwtToken = requestTokenHeader.substring(7);
-        String username = this.getUsernameFromToken(jwtToken);
-        return userRepository.findByUsername(username);
-
-    }
+//    public User getUserLogin(HttpServletRequest request){
+//        final String requestTokenHeader = request.getHeader("Authorization");
+//        String jwtToken = requestTokenHeader.substring(7);
+//        String data = this.getDataFromToken(jwtToken);
+//
+////        return userRepository.findByUsername(username);
+//
+//    }
 
 
     private Boolean isTokenExpired(String token) {
@@ -94,11 +89,11 @@ public class JwtToken implements Serializable {
     }
 
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-
-        final String username = getUsernameFromToken(token);
-
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-
-    }
+//    public Boolean validateToken(String token, UserDetails userDetails) {
+//
+//        final String username = getUsernameFromToken(token);
+//
+//        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+//
+//    }
 }

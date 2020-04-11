@@ -1,6 +1,9 @@
 package com.perfume.controller;
 
 import com.perfume.constant.RoleEnum;
+import com.perfume.dto.ResponseMsg;
+import com.perfume.dto.UserDTO;
+import com.perfume.dto.mapper.UserMapper;
 import com.perfume.entity.Role;
 import com.perfume.repository.RoleRepository;
 import com.perfume.repository.UserRepository;
@@ -35,7 +38,12 @@ public class UserController {
     private JwtUserDetailsService userDetailsService;
 
     @Autowired
+    private UserMapper userMapper;
+    @Autowired
     private JwtToken jwtTokenUtil;
+
+
+
 
     @PostMapping("/add")
     public ResponseEntity<User> create(@RequestBody User user) {

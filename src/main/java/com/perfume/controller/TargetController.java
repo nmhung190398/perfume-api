@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class TargetController {
         return ResponseEntity.ok(new ResponseMsg<>(body,200,""));
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMsg<Boolean>> delete(@PathVariable Long id) {
         targetRepository.changeStatus(id, StatusEnum.DELETED.getValue());

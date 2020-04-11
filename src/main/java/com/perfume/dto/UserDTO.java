@@ -15,7 +15,8 @@ public class UserDTO {
     public String email;
     public String address;
     public String phone;
-    @JsonIgnore
     public String password;
+    public String confirmPassword;
     public List<RoleDTO> roles;
+    public String oldPassworld;
 }
