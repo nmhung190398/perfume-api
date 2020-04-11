@@ -7,5 +7,7 @@ public class CommentDTO extends BaseDTO {
 
     public String type;
 
+    public Long postId;
+
     public List<CommentDTO> subComments;
 }

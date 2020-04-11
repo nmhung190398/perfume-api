@@ -21,6 +21,9 @@ public class Comment extends BaseEntity {
     @QueryField
     public String type;
 
+    @QueryField
+    public Long postId;
+
     @ManyToOne
     @JoinColumn(name = "paren_comment_id")
     public Comment parenComment;

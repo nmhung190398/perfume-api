@@ -1,6 +1,7 @@
 package com.perfume.controller;
 
 
+import com.perfume.constant.CommentType;
 import com.perfume.constant.StatusEnum;
 import com.perfume.dto.PagingDTO;
 import com.perfume.dto.CommentDTO;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,10 +37,16 @@ public class CommentController {
 
     @PostMapping("")
     public ResponseEntity<ResponseMsg<Comment>> create(@RequestBody Comment body) {
+        if(CommentType.find(body.getType()) == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        if (body.getPostId() == null) {
+            body.setPostId(0L);
+        }
         body.setStatus(StatusEnum.ACTIVE.getValue());
         body.setId(null);
         commentRepository.save(body);
-        return ResponseEntity.ok(new ResponseMsg<>(body,200,""));
+        return ResponseEntity.ok(new ResponseMsg<>(body, 200, ""));
     }
 
     @PutMapping("/{id}")
@@ -46,14 +54,14 @@ public class CommentController {
         body.setStatus(null);
         body.setId(id);
         commentRepository.update(body);
-        return ResponseEntity.ok(new ResponseMsg<>(body,200,""));
+        return ResponseEntity.ok(new ResponseMsg<>(body, 200, ""));
     }
 
     @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMsg<Boolean>> delete(@PathVariable Long id) {
         commentRepository.changeStatus(id, StatusEnum.DELETED.getValue());
-        return ResponseEntity.ok(new ResponseMsg<>(true,200,""));
+        return ResponseEntity.ok(new ResponseMsg<>(true, 200, ""));
     }
 
     @GetMapping("")
@@ -101,10 +109,6 @@ public class CommentController {
         Pageable paging = PageRequest.of(page - 1, limit);
 
 
-
-
-
-
         Page<Comment> pagedResult = commentRepository.findPage(body, paging);
         List<CommentDTO> comments = new ArrayList<>();
         if (pagedResult.hasContent()) {
@@ -113,4 +117,26 @@ public class CommentController {
         PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(comments, pagingDTO));
     }
+
+
+    @GetMapping("/{type}/{postId}/{page}/{limit}")
+    public ResponseEntity<ResponsePaging<CommentDTO>> getByPostId(@PathVariable Long postId, @PathVariable String type, @PathVariable int page, @PathVariable int limit) {
+        if(CommentType.find(type) == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        Comment commentSearch = new Comment();
+        commentSearch.setStatus(StatusEnum.ACTIVE.getValue());
+        commentSearch.setPostId(postId);
+        commentSearch.setType(type);
+        Pageable paging = PageRequest.of(page - 1, limit);
+        Page<Comment> pagedResult = commentRepository.findPage(commentSearch, paging);
+        List<CommentDTO> comments = new ArrayList<>();
+        if (pagedResult.hasContent()) {
+            comments = pagedResult.getContent().stream().map(commentMapper::toDTO).collect(Collectors.toList());
+        }
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
+        return ResponseEntity.ok(new ResponsePaging<>(comments, pagingDTO));
+    }
+
+
 }

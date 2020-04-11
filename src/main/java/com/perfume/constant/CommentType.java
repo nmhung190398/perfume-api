@@ -12,4 +12,14 @@ public enum CommentType {
         return _value;
     }
 
+
+    public static CommentType find(String value){
+        for(CommentType v : values()){
+            if( v.value().equals(value)){
+                return v;
+            }
+        }
+        return null;
+    }
+
 }
