@@ -58,6 +58,9 @@ public class CheckoutController {
     @Autowired
     MailUtils mailUtils;
 
+    @Autowired
+    CouponRepository couponRepository;
+
 
 //    @PutMapping("/delivery/{id}")
 //    public ResponseEntity<ResponseMsg<Object>> changeStatusDelivery(@PathVariable Long id) {
@@ -115,8 +118,24 @@ public class CheckoutController {
     public ResponseEntity<ResponseMsg<Checkout>> checkout(@RequestBody Checkout checkout, HttpServletRequest request) {
         ResponseMsg<Checkout> responseMsg = new ResponseMsg<>(null, 200, "");
 
-
+        if (checkout.getCoupon() != null) {
+            String codeCoupon = checkout.getCoupon().getCode();
+            if (codeCoupon == null) {
+                checkout.setCoupon(null);
+            } else {
+                Coupon coupon = couponRepository.getByCodeValidate(codeCoupon);
+                if (coupon == null) {
+                    responseMsg.setStatus(400);
+                    responseMsg.setMsg("Mã giảm giả không phù hợp");
+                    return ResponseEntity.status(responseMsg.getStatus()).body(responseMsg);
+                } else {
+                    checkout.setCoupon(coupon);
+                }
+            }
+        }
         User user = jwtToken.getUserLogin(request);
+
+
         List<CartItem> carts = user.getCartItems();
         if (carts.size() > 0) {
 

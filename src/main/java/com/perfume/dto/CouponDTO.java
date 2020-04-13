@@ -12,9 +12,10 @@ public class CouponDTO extends BaseDTO {
 
     public String code;
 
-    public Date MFG;
+    public Date startDate;
+    public Date endDate;
 
-    public int total;
+    public Integer total;
 
 //    List<CheckoutDTO> checkouts;
 }
