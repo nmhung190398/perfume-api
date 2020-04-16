@@ -98,6 +98,7 @@ public class ProductController {
             }
             item.setProduct(product);
         });
+        body.setStatus(StatusEnum.ACTIVE.getValue());
         body = productMapper.toDTO(productRepository.save(product));
         responseMsg.setStatus(200);
         responseMsg.setData(body);

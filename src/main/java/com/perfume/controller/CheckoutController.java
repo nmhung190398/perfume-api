@@ -88,6 +88,7 @@ public class CheckoutController {
             if (tmp.getStatus() == CheckoutStatus.DELETED.getValue()) {
                 tmp.setNote(body.getNote());
             }
+
             tmp = checkoutRepository.save(tmp);
             if (tmp != null) {
                 mailUtils.send(tmp);

@@ -1,6 +1,7 @@
 package com.perfume.controller;
 
 import com.perfume.constant.RoleEnum;
+import com.perfume.constant.StatusEnum;
 import com.perfume.dto.ResponseMsg;
 import com.perfume.dto.RoleDTO;
 import com.perfume.dto.UserDTO;
@@ -21,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import java.util.*;
 
 import javax.management.relation.RoleStatus;
 import javax.servlet.http.HttpServlet;
@@ -74,7 +76,9 @@ public class AuthController {
                 User user = userMapper.toEntity(userDTO);
                 Role role = roleRepository.findByName(RoleEnum.ROLE_MEMBER.toString());
                 user.setRoles(Arrays.asList(role));
-                user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+                String passwordEncode = new BCryptPasswordEncoder().encode(user.getPassword());
+                user.setPassword(passwordEncode);
+                user.setStatus(StatusEnum.ACTIVE.getValue());
                 user = userRepository.save(user);
                 if(user != null){
                     responseMsg.setMsg("Tạo tài khoản thành công");
@@ -92,6 +96,11 @@ public class AuthController {
 
 
         return ResponseEntity.ok(responseMsg);
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getRoles(){
+        return ResponseEntity.ok(roleRepository.findAll());
     }
     @PutMapping("/change-password")
     public ResponseEntity<ResponseMsg<UserDTO>> update(Locale locale, @RequestBody UserDTO userDTO){
