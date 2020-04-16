@@ -53,6 +53,7 @@ public class ProductController {
         }
         body.setImage(imgHash+imageUrl);
         body.setStatus(StatusEnum.ACTIVE.getValue());
+        
 
         productRepository.save(body);
         return ResponseEntity.ok(body);
