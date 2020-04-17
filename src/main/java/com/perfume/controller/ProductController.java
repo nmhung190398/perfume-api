@@ -16,7 +16,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,8 +56,8 @@ public class ProductController {
                 throw new ValidationException("invalid image type for base64");
             }
             body.setImage(imgHash + imageUrl);
-
         }
+
         body.setStatus(StatusEnum.ACTIVE.getValue());
         body.setId(null);
         Product product = productMapper.toEntity(body);

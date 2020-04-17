@@ -13,10 +13,14 @@ import com.perfume.repository.UserRepository;
 import com.perfume.entity.User;
 import com.perfume.sercurity.JwtToken;
 import com.perfume.sercurity.JwtUserDetailsService;
+import com.perfume.util.UploadFileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +48,11 @@ public class UserController {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    UploadFileUtil uploadFileUtil;
+
+    private final String imgHash = "/api/user/image/";
+
 //    @PostMapping("")
 //    public ResponseEntity<ResponseMsg<User>> create(@RequestBody User body) {
 //        body.setStatus(StatusEnum.ACTIVE.getValue());
@@ -53,6 +63,17 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMsg<User>> update(@RequestBody User body, @PathVariable Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()) {
+            throw new ValidationException("user does not exist");
+        }
+        if (body.image != null) {
+            String imageUrl = upload(body.image, body.username);
+            if (imageUrl.equals("")) {
+                throw new ValidationException("invalid image type for base64");
+            }
+            body.setImage(imgHash + imageUrl);
+        }
         body.setStatus(null);
         body.setId(id);
         userRepository.update(body);
@@ -88,7 +109,7 @@ public class UserController {
     public ResponseEntity<UserDTO> getById(@PathVariable Long id) {
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()) {
-            throw new ValidationException("category does not exist");
+            throw new ValidationException("user does not exist");
         }
         return ResponseEntity.ok(userMapper.toDTO(user.get()));
     }
@@ -121,30 +142,53 @@ public class UserController {
 
 
     @PostMapping("")
-    public ResponseEntity<User> create(@RequestBody User user) {
-        String username = user.getUsername();
+    public ResponseEntity<User> create(@RequestBody UserDTO userDTO) {
+        String username = userDTO.getUsername();
         if (userRepository.existsByUsername(username)) {
             throw new ValidationException("Username already existed");
         }
-
-
-
-
-
-
-
+        User user = userMapper.toEntity(userDTO);
         String password = user.getPassword();
         String encodedPassword = new BCryptPasswordEncoder().encode(password);
 
-        Role role = roleRepository.findByName(RoleEnum.ROLE_MEMBER.toString());
-        List<Role> roles = new ArrayList<>();
-        roles.add(role);
-        user.setRoles(roles);
+        if (user.getRoles() == null) {
+            Role role = roleRepository.findByName(RoleEnum.ROLE_MEMBER.toString());
+            List<Role> roles = new ArrayList<>();
+            roles.add(role);
+            user.setRoles(roles);
+        }
+
         user.setPassword(encodedPassword);
         user.setStatus(StatusEnum.ACTIVE.getValue());
+        if (user.image != null) {
+            String imageUrl = upload(user.image, user.username);
+            if (imageUrl.equals("")) {
+                throw new ValidationException("invalid image type for base64");
+            }
+            user.setImage(imgHash + imageUrl);
+        }
         userRepository.save(user);
 
         user.setPassword("");
         return ResponseEntity.ok(user);
+    }
+
+    public String upload(String image, String fileName) {
+        String base64Image = image;
+        if (base64Image.contains(",")) {
+            base64Image = base64Image.split(",")[1];
+        }
+
+        return uploadFileUtil.saveFile(base64Image, fileName);
+    }
+
+    @GetMapping("/image/{fileName:.+}")
+    public ResponseEntity<InputStreamResource> getImage(@PathVariable String fileName) throws IOException {
+        Resource imgFile = uploadFileUtil.loadFileAsResource(fileName);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(new InputStreamResource(imgFile.getInputStream()));
     }
 }

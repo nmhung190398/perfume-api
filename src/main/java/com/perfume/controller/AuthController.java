@@ -3,7 +3,6 @@ package com.perfume.controller;
 import com.perfume.constant.RoleEnum;
 import com.perfume.constant.StatusEnum;
 import com.perfume.dto.ResponseMsg;
-import com.perfume.dto.RoleDTO;
 import com.perfume.dto.UserDTO;
 import com.perfume.dto.mapper.UserMapper;
 import com.perfume.entity.JwtRequest;
@@ -24,8 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
-import javax.management.relation.RoleStatus;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Locale;
@@ -50,6 +47,9 @@ public class AuthController {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authenticationRequest) {
@@ -76,7 +76,7 @@ public class AuthController {
                 User user = userMapper.toEntity(userDTO);
                 Role role = roleRepository.findByName(RoleEnum.ROLE_MEMBER.toString());
                 user.setRoles(Arrays.asList(role));
-                String passwordEncode = new BCryptPasswordEncoder().encode(user.getPassword());
+                String passwordEncode = passwordEncoder.encode(user.getPassword());
                 user.setPassword(passwordEncode);
                 user.setStatus(StatusEnum.ACTIVE.getValue());
                 user = userRepository.save(user);
@@ -102,16 +102,23 @@ public class AuthController {
     public ResponseEntity<List<Role>> getRoles(){
         return ResponseEntity.ok(roleRepository.findAll());
     }
+
     @PutMapping("/change-password")
-    public ResponseEntity<ResponseMsg<UserDTO>> update(Locale locale, @RequestBody UserDTO userDTO){
+    public ResponseEntity update(Locale locale, @RequestBody UserDTO userDTO){
         ResponseMsg responseMsg = new ResponseMsg();
         User user = userRepository.findByUsername(
                 SecurityContextHolder.getContext().getAuthentication().getName());
 
-        if (!userRepository.existsByUsernameAndPassword(user.getUsername(), userDTO.getOldPassworld())) {
-//            throw new InvalidOldPasswordException();
+        if (!userDTO.getConfirmPassword().equals(userDTO.getPassword())) {
+            responseMsg.setMsg("Confirmed password does not match");
+            return ResponseEntity.ok(responseMsg);
+        }
+
+        if (!passwordEncoder.matches(userDTO.getOldPassworld(), user.getPassword())) {
+            responseMsg.setMsg("Wrong old password");
+            return ResponseEntity.ok(responseMsg);
         }else{
-            user.setPassword(userDTO.getPassword());
+            user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             userRepository.save(user);
             responseMsg.setStatus(200);
         }
