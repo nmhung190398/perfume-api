@@ -10,13 +10,14 @@ import javax.persistence.OneToMany;
 import java.util.List;
 
 @Data
-@Builder
-public class CategoryDTO extends BaseDTO {
+public class CategoryDTO {
+    private Long id;
     public String name;
     public String code;
     public String description;
 
     public CategoryDTO() {
+        super();
     }
 
     public CategoryDTO(String name, String code, String description) {

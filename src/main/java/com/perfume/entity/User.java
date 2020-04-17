@@ -1,18 +1,20 @@
 package com.perfume.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 
 import java.util.List;
 
-@Builder
 @Entity
 @Data
 @TableName
+@EqualsAndHashCode(callSuper = true)
 public class User extends BaseEntity {
     @Column(unique = true)
     @QueryField
@@ -27,12 +29,16 @@ public class User extends BaseEntity {
     public String address;
     @QueryField
     public String phone;
+    @JsonIgnore
     public String password;
+
+    public String image;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role")
     public List<Role> roles;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     public List<CartItem> cartItems;
 

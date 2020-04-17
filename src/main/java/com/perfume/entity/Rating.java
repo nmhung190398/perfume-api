@@ -2,6 +2,7 @@ package com.perfume.entity;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,8 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Data
-@Builder
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class Rating extends BaseEntity {
     public int score;
 
@@ -27,4 +28,15 @@ public class Rating extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "product_id")
     public Product product;
+
+    public Rating() {
+    }
+
+    public Rating(int score, Long userId, Long productId, User user, Product product) {
+        this.score = score;
+        this.userId = userId;
+        this.productId = productId;
+        this.user = user;
+        this.product = product;
+    }
 }

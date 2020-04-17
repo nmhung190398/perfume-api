@@ -2,27 +2,31 @@ package com.perfume.entity;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 
 @Data
-@Builder
 @Entity
+@EqualsAndHashCode(callSuper = true)
 public class CheckoutItem extends BaseEntity {
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    public Long userId;
-
-    @Column(name = "product_id", insertable = false, updatable = false)
-    public Long productId;
 
     public int quantity;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    public Product product;
-
+    @JoinColumn(name = "version_product_id")
+    public Version version;
     @ManyToOne
     @JoinColumn(name = "checkout_id")
     public Checkout checkout;
+
+    public CheckoutItem() {
+    }
+
+    public CheckoutItem(int quantity, Version version, Checkout checkout) {
+        this.quantity = quantity;
+        this.version = version;
+        this.checkout = checkout;
+    }
 }

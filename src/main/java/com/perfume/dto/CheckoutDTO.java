@@ -6,11 +6,30 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Builder
 public class CheckoutDTO extends BaseDTO {
-    public UserDTO user;
+    private UserDTO user;
 
-    public CouponDTO coupon;
+    private CouponDTO coupon;
 
-    public List<CheckoutItemDTO> checkoutItems;
+    private List<CheckoutItemDTO> checkoutItems;
+
+    private String firstname;
+
+    private String lastname;
+
+
+    private Integer paymentMethod;
+
+    private String address;
+
+    private String email;
+
+    private String phone;
+
+    private Integer provinceId;
+
+    private Integer districtId;
+
+    private Integer wardId;
+    private String note;
 }

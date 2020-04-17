@@ -1,25 +1,34 @@
 package com.perfume;
 
 import com.perfume.constant.RoleEnum;
+import com.perfume.constant.StatusEnum;
 import com.perfume.constant.TargetEnum;
 import com.perfume.dto.mapper.UserMapper;
-import com.perfume.entity.Product;
-import com.perfume.entity.Target;
-import com.perfume.entity.Role;
-import com.perfume.entity.User;
+import com.perfume.entity.*;
 import com.perfume.repository.ProductRepository;
 import com.perfume.repository.RoleRepository;
 import com.perfume.repository.TargetRepository;
 import com.perfume.repository.UserRepository;
+import com.perfume.util.MailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,33 +54,48 @@ public class Application implements CommandLineRunner {
     @Autowired
     ProductRepository productRepository;
 
+
+    @Autowired
+    MailUtils mailUtils;
+
+
     @Override
     public void run(String... args) throws Exception {
 
+
+//        this.sendMail();
+
         // Khi chương trình chạy
 //         Insert vào csdl một user.
-        User user = User.builder().username("admin").password(new BCryptPasswordEncoder().encode("123456"))
-                .address("Thái Nguyên").email("nmhung190398@gmail.com").firstname("hung").lastname("nguyen").build();
+        User user = new User();
+        user.setUsername("admin");
+        user.setPassword(new BCryptPasswordEncoder().encode("123456"));
+        user.setAddress("Thái Nguyên");
+        user.setEmail("nmhung190398@gmail.com");
+        user.setFirstname("hung");
+        user.setFirstname("nguyen");
+        user.setStatus(StatusEnum.ACTIVE.getValue());
 
         List<Target> targets = Arrays.asList(
-                Target.builder().name(TargetEnum.MALE.getValue()).build(),
-                Target.builder().name(TargetEnum.FEMALE.getValue()).build(),
-                Target.builder().name(TargetEnum.GAY.getValue()).build(),
-                Target.builder().name(TargetEnum.LES.getValue()).build(),
-                Target.builder().name(TargetEnum.CAR.getValue()).build()
+
+                new Target(TargetEnum.MALE.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.FEMALE.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.GAY.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.LES.getValue(), StatusEnum.ACTIVE.getValue()),
+                new Target(TargetEnum.CAR.getValue(), StatusEnum.ACTIVE.getValue())
         );
 
-        for (Target target:
-             targets) {
+        for (Target target :
+                targets) {
             if (targetRepository.findByName(target.getName()) == null) {
                 targetRepository.save(target);
             }
         }
 
         List<Role> roles = Arrays.asList(
-                Role.builder().name(RoleEnum.ROLE_ADMIN.toString()).users(Arrays.asList(user)).build(),
-                Role.builder().name(RoleEnum.ROLE_EMPLOYEE.toString()).users(Arrays.asList(user)).build(),
-                Role.builder().name(RoleEnum.ROLE_MEMBER.toString()).users(Arrays.asList(user)).build()
+                new Role(RoleEnum.ROLE_ADMIN.toString(), Arrays.asList(user)),
+                new Role(RoleEnum.ROLE_EMPLOYEE.toString(), Arrays.asList(user)),
+                new Role(RoleEnum.ROLE_MEMBER.toString(), Arrays.asList(user))
         );
         for (int i = 0; i < roles.size(); ++i) {
             if (roleRepository.findByName(roles.get(i).getName()) == null) {
@@ -87,7 +111,19 @@ public class Application implements CommandLineRunner {
         testMapper();
 
     }
-    public void testMapper(){
+
+    public void sendMail() {
+        Checkout checkout = new Checkout();
+        checkout.setEmail("manhhung19031998@gmail.com");
+        checkout.setAddress("hdz");
+        checkout.setFirstname("HDZ");
+        checkout.setLastname("ahihi");
+
+        mailUtils.send(checkout);
+
+    }
+
+    public void testMapper() {
 //        Product product = Product.builder().categoryId(1L).build();
 //        List<Product> list = productRepository.find(product);
 //        User user = User.builder().username("admin").password(new BCryptPasswordEncoder().encode("123456"))
@@ -109,5 +145,17 @@ public class Application implements CommandLineRunner {
 
         System.out.println("");
     }
+//
+//    @Bean
+//    public WebMvcConfigurer corsConfigurer() {
+//        return new WebMvcConfigurer() {
+//            @Override
+//            public void addCorsMappings(CorsRegistry registry) {
+//                registry.addMapping("/**")
+//                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+//                        .allowedOrigins("*").maxAge(3600).allowedHeaders("*");
+//            }
+//        };
+//    }
 
 }

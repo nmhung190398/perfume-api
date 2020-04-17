@@ -9,6 +9,7 @@ import com.perfume.repository.custom.BaseRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -20,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> implements BaseRepository<E> {
 //    protected String nameTable = getType(0).getName();
@@ -37,8 +39,9 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
 
     public BaseRepositoryCustom(String asName) {
         super(asName);
-        this.asName = asName;
+//        this.asName = asName;
     }
+
 
     private Map<String, Object> toMap(MultiValueMap<String, Object> multiValueMap) {
         Map<String, Object> map = new HashMap<>();
@@ -88,19 +91,21 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
     }
 
     @Override
-    public List<E> find(E e) {
-        ResponseBaseDAO responseBaseDAO = super.createQuery(e);
-        Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
-        responseBaseDAO.getValues().forEach(query::setParameter);
-        List<E> list = query.getResultList();
+    public List<E> find(Object e) {
+        List<E> list = findBase(e).getResultList();
         return list;
     }
 
-    @Override
-    public Page<E> findPage(E e, Pageable pageable) {
+    protected Query findBase(Object e){
         ResponseBaseDAO responseBaseDAO = super.createQuery(e);
         Query query = entityManager.createQuery(responseBaseDAO.getSql(), type);
         responseBaseDAO.getValues().forEach(query::setParameter);
+        return query;
+    }
+
+    @Override
+    public Page<E> findPage(Object e, Pageable pageable) {
+        Query query = findBase(e);
         query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
         query.setMaxResults(pageable.getPageSize());
 
@@ -110,7 +115,7 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
     }
 
     @Override
-    public Long count(E e) {
+    public Long count(Object e) {
         ResponseBaseDAO responseBaseDAO = super.createQueryCount(e);
         Query query = entityManager.createQuery(responseBaseDAO.getSql(), Long.class);
         responseBaseDAO.getValues().forEach(query::setParameter);
@@ -119,26 +124,28 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
 
     @Override
     @Transactional
-    public boolean update(E e) {
+    public boolean update(Object e) {
         ResponseBaseDAO responseBaseDAO = super.createUpdate(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());//        String sql = String.join(" ", "SELECT", asName, "FROM", nameTable, asName, " ");
         responseBaseDAO.getValues().forEach(query::setParameter);
         int rs = query.executeUpdate();
+
+
         return rs > 0;
     }
 
     @Override
-    @Transactional
-    public boolean updateFull(E e) {
+    public boolean updateFull(Object e) {
         ResponseBaseDAO responseBaseDAO = super.createUpdateFull(e);
         Query query = this.entityManager.createQuery(responseBaseDAO.getSql());
         responseBaseDAO.getValues().forEach(query::setParameter);
         int rs = query.executeUpdate();
+//        this.entityManager.getTransaction().commit();
+//        this.entityManager.close();
         return rs > 0;
     }
 
     @Override
-    @Transactional
     public boolean changeStatus(Long id, int status) {
             E e = newInstance();
             if(e == null){

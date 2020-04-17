@@ -1,29 +1,35 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.QueryField;
+import com.nmhung.anotation.TableName;
 import com.perfume.dto.BaseDTO;
+import com.perfume.dto.search.CartItemSearch;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 
 @Data
-@Builder
 @Entity
+@TableName(searchClass = CartItemSearch.class)
+@EqualsAndHashCode(callSuper = true)
 public class CartItem extends BaseEntity {
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    public Long userId;
 
-    @Column(name = "product_id", insertable = false, updatable = false)
-    public Long productId;
-
-    public int quantity;
+    @QueryField
+    public Integer quantity;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     public User user;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
-    public Product product;
+    @JoinColumn(name = "version_product_id")
+    public Version version;
+
+    public CartItem() {
+    }
+
+
 }

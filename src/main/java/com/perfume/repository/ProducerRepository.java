@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProducerRepository extends JpaRepository<Producer, Long>, ProducerRepositoryCustom {
-    boolean existsByCode(String code);
+//    boolean existsByCode(String code);
     Page<Producer> findAll(Pageable paging);
 }

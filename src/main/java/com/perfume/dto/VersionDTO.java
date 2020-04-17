@@ -8,10 +8,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Data
-@Builder
-public class VersionDTO extends BaseDTO {
+public class VersionDTO {
+    private Long id;
     public String name;
     public long price;
+    public int total;
+    public Long productId;
+//    public ProductDTO product;
 
-//    public Product product;
+
 }

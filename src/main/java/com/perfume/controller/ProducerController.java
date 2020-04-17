@@ -1,10 +1,7 @@
 package com.perfume.controller;
 
 import com.perfume.constant.StatusEnum;
-import com.perfume.dto.CategoryDTO;
-import com.perfume.dto.PagingDTO;
-import com.perfume.dto.ProducerDTO;
-import com.perfume.dto.ResponsePaging;
+import com.perfume.dto.*;
 import com.perfume.dto.mapper.ProducerMapper;
 import com.perfume.entity.Category;
 import com.perfume.entity.Producer;
@@ -16,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,24 +30,26 @@ public class ProducerController {
     ProducerMapper producerMapper;
 
     @PostMapping("")
-    public ResponseEntity<Producer> create(@RequestBody Producer body) {
+    public ResponseEntity<ResponseMsg<Producer>> create(@RequestBody Producer body) {
         body.setStatus(StatusEnum.ACTIVE.getValue());
-
+        body.setId(null);
         producerRepository.save(body);
-        return ResponseEntity.ok(body);
+        return ResponseEntity.ok(new ResponseMsg<>(body,200,""));
     }
 
-    @PutMapping("")
-    public ResponseEntity<String> update(@RequestBody Producer body) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseMsg<Producer>> update(@RequestBody Producer body, @PathVariable Long id) {
         body.setStatus(null);
+        body.setId(id);
         producerRepository.update(body);
-        return ResponseEntity.ok("Update Success");
+        return ResponseEntity.ok(new ResponseMsg<>(body,200,""));
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    public ResponseEntity<ResponseMsg<Boolean>> delete(@PathVariable Long id) {
         producerRepository.changeStatus(id, StatusEnum.DELETED.getValue());
-        return ResponseEntity.ok("Delete Success");
+        return ResponseEntity.ok(new ResponseMsg<>(true,200,""));
     }
 
     @GetMapping("")
@@ -66,7 +66,7 @@ public class ProducerController {
         }
 
         return ResponseEntity.ok(
-                new ResponsePaging<>(producers, new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset()))
+                new ResponsePaging<>(producers, new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset()))
         );
     }
 
@@ -100,7 +100,7 @@ public class ProducerController {
         if (pagedResult.hasContent()) {
             producers = pagedResult.getContent().stream().map(producerMapper::toDTO).collect(Collectors.toList());
         }
-        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(producers, pagingDTO));
     }
 }
