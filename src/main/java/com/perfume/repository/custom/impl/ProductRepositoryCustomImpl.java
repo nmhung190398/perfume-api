@@ -2,6 +2,7 @@ package com.perfume.repository.custom.impl;
 
 import com.nmhung.sql.model.ResponseBaseDAO;
 import com.perfume.constant.StatusEnum;
+import com.perfume.dto.OderBy;
 import com.perfume.dto.search.ProductSearch;
 import com.perfume.entity.Product;
 import com.perfume.entity.User;
@@ -22,6 +23,7 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
 
     public ProductRepositoryCustomImpl() {
         super("P");
+//        this.fistQuery = "SELECT P, SUM(P.id) as avgPrice FROM Product P ";
     }
 
     private String asCategory = "Category";
@@ -33,7 +35,15 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
         return findPage(productSearch, pageable);
     }
 
-//    @Override
+    @Override
+    protected Query findBase(Object e) {
+        ResponseBaseDAO responseBaseDAO = super.createQuery(e);
+        Query query = entityManager.createQuery(responseBaseDAO.getSql());
+        responseBaseDAO.getValues().forEach(query::setParameter);
+        return query;
+    }
+
+    //    @Override
 //    protected Query findBase(Object e) {
 //        ProductSearch productSearch = (ProductSearch) e;
 //        Map<String, Object> map = super.converEntityToMapQuery(productSearch);
@@ -61,6 +71,8 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
     public Map<String, Object> converEntityToMapQuery(Object e) {
         ProductSearch productSearch = (ProductSearch) e;
         Map<String, Object> map = super.converEntityToMapQuery(productSearch);
+
+
         if (productSearch.getMaxPrice() != null) {
             map.put("maxPrice", productSearch.getMaxPrice());
         }
@@ -73,12 +85,36 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
         if (productSearch.getCategoryCode() != null) {
             map.put("categoryCode", productSearch.getCategoryCode());
         }
-        if(productSearch.getVersionId() != null){
-            map.put("versionId",productSearch.getVersionId());
+        if (productSearch.getVersionId() != null) {
+            map.put("versionId", productSearch.getVersionId());
+        }
+
+        if (productSearch.getOderBy() != null) {
+            map.put("oderBy", productSearch.getOderBy());
         }
         return map;
     }
 
+    @Override
+    public String createOrderQuery(Map<String, Object> queryParams) {
+        if (queryParams.get("oderBy") != null) {
+            OderBy oderBy = (OderBy) queryParams.get("oderBy");
+            String sql = " order by";
+            if(oderBy.getName() != null){
+                String name = oderBy.getName();
+                if(name.equalsIgnoreCase("price")){
+                    sql += " P.avgPrice ";
+                    sql += oderBy.getType() != null? oderBy.getType() + " " : " ";
+                }else if(name.equalsIgnoreCase("countCheckoutItem")){
+                    sql += " P.totalSold ";
+                    sql += oderBy.getType() != null? oderBy.getType() + " " : " ";
+                }
+                return sql;
+            }
+        }
+
+        return super.createOrderQuery(queryParams);
+    }
 
     @Override
     public String createWhereQuery(Map<String, Object> queryParams, Map<String, Object> values) {
@@ -110,7 +146,11 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
             sql += " AND " + asName + ".id IN ( SELECT distinct V.product.id FROM Version V WHERE V.id = :versionId ) ";
             values.put("versionId", queryParams.get("versionId"));
         }
-
+//        if (queryParams.get("magiamgiaId") != null) {
+//            sql += " AND " + asCategory + ".code = :categoryCode ";
+//            values.put("categoryCode", queryParams.get("categoryCode"));
+//        }
+//NEW HOT
         return sql;
     }
 }

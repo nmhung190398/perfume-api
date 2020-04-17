@@ -1,4 +1,4 @@
-package com.perfume.dto.mapper;
+package com.perfume.dto;
 
 import com.perfume.dto.BaseDTO;
 import lombok.Data;

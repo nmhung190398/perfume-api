@@ -32,6 +32,8 @@ public class User extends BaseEntity {
     @JsonIgnore
     public String password;
 
+    public String image;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role")
     public List<Role> roles;

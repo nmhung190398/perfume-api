@@ -5,16 +5,19 @@ import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.Supperclass;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass
 @Data
 @Supperclass
+@EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
     @Id
@@ -23,12 +26,22 @@ public class BaseEntity {
     protected Long id;
 
     @QueryField
-    @JsonIgnore
     protected Integer status;
     @QueryField
+    @CreatedDate
     protected Date createdAt;
+
+
     @QueryField
+    @LastModifiedDate
     protected Date updatedAt;
+
+
+    @CreatedBy
+    protected String createdBy;
+
+    @LastModifiedBy
+    protected String lastModifiedBy;
 
     public BaseEntity() {
     }

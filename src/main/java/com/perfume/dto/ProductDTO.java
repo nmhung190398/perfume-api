@@ -1,14 +1,7 @@
 package com.perfume.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import com.nmhung.anotation.QueryField;
-import com.nmhung.anotation.TableName;
-import com.perfume.dto.mapper.AmountDTO;
-import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

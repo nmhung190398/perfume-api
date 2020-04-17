@@ -36,6 +36,10 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "category_id")
     public Category category;
 
+    public Long avgPrice;
+
+    public Long totalSold;
+
 //    @QueryField(name = "category.id")
 //    @Column(name = "category_id", updatable = false, insertable = false)
 //    public Long category_id;

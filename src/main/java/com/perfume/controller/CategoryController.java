@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<ResponseMsg<Long>> delete(@PathVariable Long id) {
         categoryRepository.changeStatus(id, StatusEnum.DELETED.getValue());
         return ResponseEntity.ok(new ResponseMsg<>(id, 200, ""));

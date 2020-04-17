@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ public class ProducerController {
         return ResponseEntity.ok(new ResponseMsg<>(body,200,""));
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMsg<Boolean>> delete(@PathVariable Long id) {
         producerRepository.changeStatus(id, StatusEnum.DELETED.getValue());
@@ -64,7 +66,7 @@ public class ProducerController {
         }
 
         return ResponseEntity.ok(
-                new ResponsePaging<>(producers, new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset()))
+                new ResponsePaging<>(producers, new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset()))
         );
     }
 
@@ -98,7 +100,7 @@ public class ProducerController {
         if (pagedResult.hasContent()) {
             producers = pagedResult.getContent().stream().map(producerMapper::toDTO).collect(Collectors.toList());
         }
-        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(producers, pagingDTO));
     }
 }

@@ -3,6 +3,7 @@ package com.perfume.controller;
 import com.perfume.constant.StatusEnum;
 import com.perfume.dto.PagingDTO;
 import com.perfume.dto.ProductDTO;
+import com.perfume.dto.ResponseMsg;
 import com.perfume.dto.ResponsePaging;
 import com.perfume.dto.mapper.ProductMapper;
 import com.perfume.dto.search.ProductSearch;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,38 +43,68 @@ public class ProductController {
     private final String imgHash = "/api/product/image/";
 
     @PostMapping("")
-    public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO body)  {
+    public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO body) {
         if (body.code == null || body.code.equals("")) {
             throw new ValidationException("code required");
         }
         if (productRepository.existsByCode(body.getCode())) {
             throw new ValidationException("code already existed");
         }
-        if(body.imageBase64 != null){
+        if (body.imageBase64 != null) {
             String imageUrl = upload(body.imageBase64, body.code);
             if (imageUrl.equals("")) {
                 throw new ValidationException("invalid image type for base64");
             }
-            body.setImage(imgHash+imageUrl);
-
+            body.setImage(imgHash + imageUrl);
         }
+
         body.setStatus(StatusEnum.ACTIVE.getValue());
         body.setId(null);
         Product product = productMapper.toEntity(body);
-        product.getVersions().forEach(item ->{
+        product.getVersions().forEach(item -> {
+            item.setStatus(StatusEnum.ACTIVE.getValue());
             item.setProduct(product);
         });
-        productRepository.save(product);
+        body = productMapper.toDTO(productRepository.save(product));
         return ResponseEntity.ok(body);
     }
 
-    @PutMapping("")
-    public ResponseEntity<String> update(@RequestBody Product body) {
-        body.setStatus(null);
-        productRepository.update(body);
-        return ResponseEntity.ok("Update Success");
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseMsg<ProductDTO>> update(@RequestBody ProductDTO body,@PathVariable Long id) {
+        ResponseMsg<ProductDTO> responseMsg = new ResponseMsg<>();
+        if (!productRepository.existsById(id)) {
+            responseMsg.setMsg("Không tồn tại sản phẩn");
+            ResponseEntity.ok(responseMsg);
+        }
+        body.setId(id);
+        if (productRepository.existsByCodeAndIdNot(body.getCode(),body.getId())) {
+            responseMsg.setMsg("Trùng URI");
+            ResponseEntity.ok(responseMsg);
+        }
+
+        if (body.imageBase64 != null) {
+            String imageUrl = upload(body.imageBase64, body.code);
+            if (imageUrl.equals("")) {
+                throw new ValidationException("invalid image type for base64");
+            }
+            body.setImage(imgHash + imageUrl);
+        }
+
+        Product product = productMapper.toEntity(body);
+        product.getVersions().forEach(item -> {
+            if (item.getId() == null) {
+                item.setStatus(StatusEnum.ACTIVE.getValue());
+            }
+            item.setProduct(product);
+        });
+        body.setStatus(StatusEnum.ACTIVE.getValue());
+        body = productMapper.toDTO(productRepository.save(product));
+        responseMsg.setStatus(200);
+        responseMsg.setData(body);
+        return ResponseEntity.ok(responseMsg);
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         productRepository.changeStatus(id, StatusEnum.DELETED.getValue());
@@ -93,11 +125,25 @@ public class ProductController {
         }
 
         return ResponseEntity.ok(
-                new ResponsePaging<>(products, new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset()))
+                new ResponsePaging<>(products, new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset()))
         );
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{code}")
+    public ResponseEntity<ResponseMsg<ProductDTO>> findByCode(@PathVariable String code) {
+        ResponseMsg<ProductDTO> responseMsg = new ResponseMsg<ProductDTO>();
+        ProductSearch productSearch = new ProductSearch();
+        productSearch.setCode(code);
+
+        List<Product> products = productRepository.find(productSearch);
+        if (products.size() > 0) {
+            responseMsg.setStatus(200);
+            responseMsg.setData(productMapper.toDTO(products.get(0)));
+        }
+        return ResponseEntity.ok(responseMsg);
+    }
+
+    @GetMapping("/id/{id}")
     public ResponseEntity<ProductDTO> getById(@PathVariable Long id) {
         Optional<Product> product = productRepository.findById(id);
         if (!product.isPresent()) {
@@ -127,7 +173,9 @@ public class ProductController {
         if (pagedResult.hasContent()) {
             products = pagedResult.getContent().stream().map(productMapper::toDTO).collect(Collectors.toList());
         }
-        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalPages(), page, limit, paging.getOffset());
+
+
+        PagingDTO pagingDTO = new PagingDTO(pagedResult.getTotalElements(), page, limit, paging.getOffset());
         return ResponseEntity.ok(new ResponsePaging<>(products, pagingDTO));
     }
 

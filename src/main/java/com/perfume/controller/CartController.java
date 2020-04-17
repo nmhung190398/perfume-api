@@ -35,7 +35,7 @@ public class CartController {
     public ResponseEntity<ResponseMsg<CartItem>> create(@RequestBody CartItem body) {
         CartItem cartItem = cartItemRepository.findByUserIdAndVersionId(body.getUser().getId(), body.getVersion().getId());
         if (cartItem != null) {
-            cartItem.setQuantity(cartItem.getQuantity() + 1);
+            cartItem.setQuantity(body.getQuantity() == null ? cartItem.getQuantity() + 1 : body.getQuantity());
             cartItemRepository.save(cartItem);
         } else {
             if (body.getQuantity() == null) {

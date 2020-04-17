@@ -11,11 +11,6 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 public class CheckoutItem extends BaseEntity {
 
-    @Column(name = "user_id", insertable = false, updatable = false)
-    public Long userId;
-
-    @Column(name = "version_product_id", insertable = false, updatable = false)
-    public Long versionProductId;
 
     public int quantity;
 
@@ -29,9 +24,7 @@ public class CheckoutItem extends BaseEntity {
     public CheckoutItem() {
     }
 
-    public CheckoutItem(Long userId, Long versionProductId, int quantity, Version version, Checkout checkout) {
-        this.userId = userId;
-        this.versionProductId = versionProductId;
+    public CheckoutItem(int quantity, Version version, Checkout checkout) {
         this.quantity = quantity;
         this.version = version;
         this.checkout = checkout;
