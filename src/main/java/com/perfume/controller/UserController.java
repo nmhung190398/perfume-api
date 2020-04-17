@@ -77,14 +77,14 @@ public class UserController {
         body.setStatus(null);
         body.setId(id);
         userRepository.update(body);
-        return ResponseEntity.ok(new ResponseMsg<>(body,200,""));
+        return ResponseEntity.ok(new ResponseMsg<>(body, 200, ""));
     }
 
     @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseMsg<Boolean>> delete(@PathVariable Long id) {
         userRepository.changeStatus(id, StatusEnum.DELETED.getValue());
-        return ResponseEntity.ok(new ResponseMsg<>(true,200,""));
+        return ResponseEntity.ok(new ResponseMsg<>(true, 200, ""));
     }
 
     @GetMapping("")
@@ -140,12 +140,13 @@ public class UserController {
     }
 
 
-
     @PostMapping("")
-    public ResponseEntity<User> create(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<ResponseMsg<UserDTO>> create(@RequestBody UserDTO userDTO) {
+        ResponseMsg<UserDTO> responseMsg = new ResponseMsg<>();
         String username = userDTO.getUsername();
         if (userRepository.existsByUsername(username)) {
-            throw new ValidationException("Username already existed");
+            responseMsg.setMsg("tài khoản đã tồn tại");
+            return ResponseEntity.ok(responseMsg);
         }
         User user = userMapper.toEntity(userDTO);
         String password = user.getPassword();
@@ -163,14 +164,15 @@ public class UserController {
         if (user.image != null) {
             String imageUrl = upload(user.image, user.username);
             if (imageUrl.equals("")) {
-                throw new ValidationException("invalid image type for base64");
+                responseMsg.setMsg("Ảnh không hợp lệ");
+                return ResponseEntity.ok(responseMsg);
             }
             user.setImage(imgHash + imageUrl);
         }
         userRepository.save(user);
-
         user.setPassword("");
-        return ResponseEntity.ok(user);
+        responseMsg.setStatus(200);
+        return ResponseEntity.ok(responseMsg);
     }
 
     public String upload(String image, String fileName) {
