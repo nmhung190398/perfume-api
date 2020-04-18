@@ -15,6 +15,7 @@ import java.util.List;
 @TableName
 public class Checkout extends BaseEntity {
     @ManyToOne
+    @QueryField(name = "user.id")
     @JoinColumn(name = "user_id")
     private User user;
 
