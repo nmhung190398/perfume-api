@@ -16,5 +16,7 @@ public class News extends BaseEntity{
     private String title;
     @Column(columnDefinition="TEXT")
     private String content;
+    @Column(columnDefinition="TEXT")
+    private String url;
 
 }
