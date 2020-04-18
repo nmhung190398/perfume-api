@@ -17,5 +17,7 @@ public class CouponDTO extends BaseDTO {
 
     public Integer total;
 
+    public Integer percent;
+
 //    List<CheckoutDTO> checkouts;
 }
