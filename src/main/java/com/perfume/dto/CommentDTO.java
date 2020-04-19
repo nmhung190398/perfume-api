@@ -14,4 +14,6 @@ public class CommentDTO extends BaseDTO {
     public Long postId;
 
     public List<CommentDTO> subComments;
+
+    public UserDTO user;
 }

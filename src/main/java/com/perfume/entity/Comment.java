@@ -15,7 +15,7 @@ import java.util.List;
 @TableName
 public class Comment extends BaseEntity {
 
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     public String content;
 
     @QueryField
@@ -31,6 +31,10 @@ public class Comment extends BaseEntity {
 
     @OneToMany(mappedBy = "parenComment")
     public List<Comment> subComments;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    public User user;
 }
 
 

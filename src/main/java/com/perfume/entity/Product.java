@@ -28,6 +28,10 @@ public class Product extends BaseEntity {
     public Date MFG;
     @QueryField
     public Date EXP;
+
+    @QueryField
+    public Integer year;
+
     public String image;
     @Lob
     public String description;
@@ -36,9 +40,10 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "category_id")
     public Category category;
 
-    public Long avgPrice;
+    public Double avgPrice;
 
-    public Long totalSold;
+
+    public Integer totalSold;
 
 //    @QueryField(name = "category.id")
 //    @Column(name = "category_id", updatable = false, insertable = false)

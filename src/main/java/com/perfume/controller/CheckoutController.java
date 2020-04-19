@@ -61,6 +61,9 @@ public class CheckoutController {
     @Autowired
     CouponRepository couponRepository;
 
+    @Autowired
+    VersionRepository versionRepository;
+
 
 //    @PutMapping("/delivery/{id}")
 //    public ResponseEntity<ResponseMsg<Object>> changeStatusDelivery(@PathVariable Long id) {
@@ -90,6 +93,9 @@ public class CheckoutController {
             }
 
             tmp = checkoutRepository.save(tmp);
+            if (tmp.getStatus() == CheckoutStatus.DONE.getValue()) {
+                this.updateTotalSold(tmp.getCheckoutItems());
+            }
             if (tmp != null) {
                 mailUtils.send(tmp);
             }
@@ -156,7 +162,7 @@ public class CheckoutController {
 
                 cartItemRepository.deleteAll(carts);
 
-                this.updateTotalSold(checkoutItems);
+//                this.updateTotalSold(checkoutItems);
             } else {
                 responseMsg.setStatus(400);
                 responseMsg.setMsg("checkout thất bại");
@@ -190,22 +196,40 @@ public class CheckoutController {
 
 
     private void updateTotalSold(List<CheckoutItem> checkoutItems) {
-        Map<Long, Long> data = new HashMap<>();
+        Map<Long, Integer> data = new HashMap<>();
+        List<Version> versions = new ArrayList<>();
+        checkoutItems.forEach(item -> {
 
-//        checkoutItems.forEach(item -> {
-//            if(data.containsKey(item.get))
-//        });
+            Version version = item.getVersion();
+            Integer totalSoldVersion = version.getTotalSold();
+            totalSoldVersion = totalSoldVersion == null ? 0 : totalSoldVersion;
+
+
+
+
+            Long idProduct = version.getProduct().getId();
+            Integer quantity = item.quantity;
+            version.setTotalSold(totalSoldVersion + item.quantity);
+            if (data.containsKey(idProduct)) {
+                quantity += data.get(idProduct);
+            }
+            versions.add(version);
+            data.put(idProduct, quantity);
+        });
+
+
 
         List<Product> list = productRepository.findAllById(data.keySet());
         list.forEach(item -> {
-            Long totalSold = item.getTotalSold();
+            Integer totalSold = item.getTotalSold();
             if (totalSold == null) {
-                item.setTotalSold(0L);
+                totalSold = 0;
             }
             totalSold += data.get(item.getId());
             item.setTotalSold(totalSold);
         });
         productRepository.saveAll(list);
+        versionRepository.saveAll(versions);
     }
 
 }

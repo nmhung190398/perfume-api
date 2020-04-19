@@ -9,7 +9,9 @@ import com.perfume.dto.ResponseMsg;
 import com.perfume.dto.ResponsePaging;
 import com.perfume.dto.mapper.CommentMapper;
 import com.perfume.entity.Comment;
+import com.perfume.entity.User;
 import com.perfume.repository.CommentRepository;
+import com.perfume.sercurity.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import javax.validation.ValidationException;
 import java.util.ArrayList;
@@ -35,14 +38,19 @@ public class CommentController {
     @Autowired
     CommentMapper commentMapper;
 
+    @Autowired
+    JwtToken jwtToken;
+
     @PostMapping("")
-    public ResponseEntity<ResponseMsg<Comment>> create(@RequestBody Comment body) {
-        if(CommentType.find(body.getType()) == null){
+    public ResponseEntity<ResponseMsg<Comment>> create(@RequestBody Comment body, HttpServletRequest request) {
+        if (CommentType.find(body.getType()) == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-        if (body.getPostId() == null) {
-            body.setPostId(0L);
-        }
+//        if (body.getPostId() == null) {
+//            body.setPostId(0L);
+//        }
+        User user = jwtToken.getUserLogin(request);
+        body.setUser(user);
         body.setStatus(StatusEnum.ACTIVE.getValue());
         body.setId(null);
         commentRepository.save(body);
@@ -104,7 +112,7 @@ public class CommentController {
 
     @PostMapping("/filter/{page}/{limit}")
     public ResponseEntity<ResponsePaging<CommentDTO>> filterPage(@RequestBody Comment body, @PathVariable int page, @PathVariable int limit) {
-        if(body.getStatus() == null){
+        if (body.getStatus() == null) {
             body.setStatus(StatusEnum.ACTIVE.getValue());
         }
         Pageable paging = PageRequest.of(page - 1, limit);
@@ -122,7 +130,7 @@ public class CommentController {
 
     @GetMapping("/{type}/{postId}/{page}/{limit}")
     public ResponseEntity<ResponsePaging<CommentDTO>> getByPostId(@PathVariable Long postId, @PathVariable String type, @PathVariable int page, @PathVariable int limit) {
-        if(CommentType.find(type) == null){
+        if (CommentType.find(type) == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         Comment commentSearch = new Comment();

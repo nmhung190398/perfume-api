@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+import java.util.stream.LongStream;
 
 @RestController
 @RequestMapping("/api/product")
@@ -40,7 +42,8 @@ public class ProductController {
     @Autowired
     UploadFileUtil uploadFileUtil;
 
-    private final String imgHash = "/api/product/image/";
+    private final String prefix = "product/";
+
 
     @PostMapping("")
     public ResponseEntity<ProductDTO> create(@RequestBody ProductDTO body) {
@@ -51,11 +54,11 @@ public class ProductController {
             throw new ValidationException("code already existed");
         }
         if (body.imageBase64 != null) {
-            String imageUrl = upload(body.imageBase64, body.code);
+            String imageUrl = uploadFileUtil.upload(body.imageBase64, prefix + body.code);
             if (imageUrl.equals("")) {
                 throw new ValidationException("invalid image type for base64");
             }
-            body.setImage(imgHash + imageUrl);
+            body.setImage(imageUrl);
         }
 
         body.setStatus(StatusEnum.ACTIVE.getValue());
@@ -65,29 +68,37 @@ public class ProductController {
             item.setStatus(StatusEnum.ACTIVE.getValue());
             item.setProduct(product);
         });
+        setValueProduct(product);
         body = productMapper.toDTO(productRepository.save(product));
         return ResponseEntity.ok(body);
     }
 
+    void setValueProduct(Product product){
+        LongStream longStream = product.getVersions().stream().mapToLong(value -> {
+            return value.getPrice();
+        });
+        product.setAvgPrice(longStream.average().getAsDouble());
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseMsg<ProductDTO>> update(@RequestBody ProductDTO body,@PathVariable Long id) {
+    public ResponseEntity<ResponseMsg<ProductDTO>> update(@RequestBody ProductDTO body, @PathVariable Long id) {
         ResponseMsg<ProductDTO> responseMsg = new ResponseMsg<>();
         if (!productRepository.existsById(id)) {
             responseMsg.setMsg("Không tồn tại sản phẩn");
             ResponseEntity.ok(responseMsg);
         }
         body.setId(id);
-        if (productRepository.existsByCodeAndIdNot(body.getCode(),body.getId())) {
+        if (productRepository.existsByCodeAndIdNot(body.getCode(), body.getId())) {
             responseMsg.setMsg("Trùng URI");
             ResponseEntity.ok(responseMsg);
         }
 
         if (body.imageBase64 != null) {
-            String imageUrl = upload(body.imageBase64, body.code);
+            String imageUrl = uploadFileUtil.upload(body.imageBase64, prefix + body.code);
             if (imageUrl.equals("")) {
                 throw new ValidationException("invalid image type for base64");
             }
-            body.setImage(imgHash + imageUrl);
+            body.setImage(imageUrl);
         }
 
         Product product = productMapper.toEntity(body);
@@ -97,7 +108,8 @@ public class ProductController {
             }
             item.setProduct(product);
         });
-        body.setStatus(StatusEnum.ACTIVE.getValue());
+        product.setStatus(StatusEnum.ACTIVE.getValue());
+        setValueProduct(product);
         body = productMapper.toDTO(productRepository.save(product));
         responseMsg.setStatus(200);
         responseMsg.setData(body);
@@ -179,22 +191,14 @@ public class ProductController {
         return ResponseEntity.ok(new ResponsePaging<>(products, pagingDTO));
     }
 
-    public String upload(String image, String fileName) {
-        String base64Image = image;
-        if (base64Image.contains(",")) {
-            base64Image = base64Image.split(",")[1];
-        }
 
-        return uploadFileUtil.saveFile(base64Image, fileName);
-    }
-
-    @GetMapping("/image/{fileName:.+}")
-    public ResponseEntity<InputStreamResource> getImage(@PathVariable String fileName) throws IOException {
-        Resource imgFile = uploadFileUtil.loadFileAsResource(fileName);
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(new InputStreamResource(imgFile.getInputStream()));
-    }
+//    @GetMapping("/image/{fileName:.+}")
+//    public ResponseEntity<InputStreamResource> getImage(@PathVariable String fileName) throws IOException {
+//        Resource imgFile = uploadFileUtil.loadFileAsResource(fileName);
+//
+//        return ResponseEntity
+//                .ok()
+//                .contentType(MediaType.IMAGE_JPEG)
+//                .body(new InputStreamResource(imgFile.getInputStream()));
+//    }
 }

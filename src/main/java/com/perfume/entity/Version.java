@@ -14,6 +14,7 @@ public class Version extends BaseEntity {
     public String name;
     public long price;
     public long total;
+    public Integer totalSold;
     @ManyToOne
     @JoinColumn(name = "product_id")
     public Product product;

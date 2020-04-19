@@ -51,7 +51,8 @@ public class UserController {
     @Autowired
     UploadFileUtil uploadFileUtil;
 
-    private final String imgHash = "/api/user/image/";
+
+    private final String prefix = "user/";
 
 //    @PostMapping("")
 //    public ResponseEntity<ResponseMsg<User>> create(@RequestBody User body) {
@@ -63,21 +64,24 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseMsg<User>> update(@RequestBody User body, @PathVariable Long id) {
+        ResponseMsg<User> responseMsg = new ResponseMsg<>(body, 200, "");
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()) {
             throw new ValidationException("user does not exist");
         }
         if (body.image != null) {
-            String imageUrl = upload(body.image, body.username);
+            String imageUrl = uploadFileUtil.upload(body.getImage(), prefix + body.getUsername());
             if (imageUrl.equals("")) {
-                throw new ValidationException("invalid image type for base64");
+                responseMsg.setStatus(400);
+                responseMsg.setMsg("invalid image type for base64");
+                return ResponseEntity.ok(responseMsg);
             }
-            body.setImage(imgHash + imageUrl);
+            body.setImage(imageUrl);
         }
         body.setStatus(null);
         body.setId(id);
         userRepository.update(body);
-        return ResponseEntity.ok(new ResponseMsg<>(body, 200, ""));
+        return ResponseEntity.ok(responseMsg);
     }
 
     @Transactional
@@ -162,12 +166,12 @@ public class UserController {
         user.setPassword(encodedPassword);
         user.setStatus(StatusEnum.ACTIVE.getValue());
         if (user.image != null) {
-            String imageUrl = upload(user.image, user.username);
+            String imageUrl = uploadFileUtil.upload(user.image, user.username);
             if (imageUrl.equals("")) {
                 responseMsg.setMsg("Ảnh không hợp lệ");
                 return ResponseEntity.ok(responseMsg);
             }
-            user.setImage(imgHash + imageUrl);
+            user.setImage(imageUrl);
         }
         userRepository.save(user);
         user.setPassword("");
@@ -175,22 +179,14 @@ public class UserController {
         return ResponseEntity.ok(responseMsg);
     }
 
-    public String upload(String image, String fileName) {
-        String base64Image = image;
-        if (base64Image.contains(",")) {
-            base64Image = base64Image.split(",")[1];
-        }
 
-        return uploadFileUtil.saveFile(base64Image, fileName);
-    }
-
-    @GetMapping("/image/{fileName:.+}")
-    public ResponseEntity<InputStreamResource> getImage(@PathVariable String fileName) throws IOException {
-        Resource imgFile = uploadFileUtil.loadFileAsResource(fileName);
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(new InputStreamResource(imgFile.getInputStream()));
-    }
+//    @GetMapping("/image/{fileName:.+}")
+//    public ResponseEntity<InputStreamResource> getImage(@PathVariable String fileName) throws IOException {
+//        Resource imgFile = uploadFileUtil.loadFileAsResource(fileName);
+//
+//        return ResponseEntity
+//                .ok()
+//                .contentType(MediaType.IMAGE_JPEG)
+//                .body(new InputStreamResource(imgFile.getInputStream()));
+//    }
 }

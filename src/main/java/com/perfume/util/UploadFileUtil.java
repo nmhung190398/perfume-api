@@ -26,6 +26,15 @@ public class UploadFileUtil {
     @Autowired
     private Environment env;
 
+    public String upload(String image, String fileName) {
+        String base64Image = image;
+        if (base64Image.contains(",")) {
+            base64Image = base64Image.split(",")[1];
+        }
+
+        return saveFile(base64Image, fileName);
+    }
+
     public UploadFileUtil() {
 //        try {
 //            uploadFolder = new File(".").getCanonicalPath() + env.getProperty("file.upload-dir");
