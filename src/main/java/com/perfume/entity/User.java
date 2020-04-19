@@ -32,6 +32,7 @@ public class User extends BaseEntity {
     @JsonIgnore
     public String password;
 
+    @QueryField
     public String image;
 
     @ManyToMany(fetch = FetchType.EAGER)
