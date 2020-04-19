@@ -20,6 +20,9 @@ public class Coupon extends BaseEntity {
     public String code;
 
     @QueryField
+    public Integer percent;
+
+    @QueryField
     public Date startDate;
 
     @QueryField

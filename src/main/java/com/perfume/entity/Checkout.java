@@ -65,6 +65,12 @@ public class Checkout extends BaseEntity {
     @Column
     private String lastname;
 
+    @Column
+    private String total;
+
+    @Column
+    private String finalprice;
+
     public Checkout() {
     }
 
