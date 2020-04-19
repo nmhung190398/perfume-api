@@ -1,6 +1,5 @@
 package com.perfume.dto;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -17,6 +16,9 @@ public class CheckoutDTO extends BaseDTO {
 
     private String lastname;
 
+    private String total;
+
+    private String finalprice;
 
     private Integer paymentMethod;
 
@@ -32,4 +34,5 @@ public class CheckoutDTO extends BaseDTO {
 
     private Integer wardId;
     private String note;
+    private Integer status;
 }
