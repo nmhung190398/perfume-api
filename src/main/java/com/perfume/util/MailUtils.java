@@ -1,7 +1,8 @@
 package com.perfume.util;
 
 import com.perfume.constant.CheckoutStatus;
-import com.perfume.entity.Checkout;
+import com.perfume.constant.Const;
+import com.perfume.entity.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 
 
 @Component
@@ -53,18 +55,62 @@ public class MailUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "không được mail mẫu ";
+        return "không có mail mẫu ";
     }
 
     private String setData(Checkout checkout) {
         Map<String, String> map = new HashMap<>();
-        map.put("firstname", checkout.getFirstname());
-        map.put("lastname", checkout.getLastname());
-        map.put("address", checkout.getAddress());
         String status = CheckoutStatus.getCheckoutStatus(checkout.getStatus()).toString();
+
         map.put("status", status);
+
+        String note = checkout.getNote();
+        map.put("note", note != null ? note : "Không có");
+
+        map.put("createdAt", Const.getSimpleDateFormat().format(checkout.getCreatedAt()));
+        String listCheckoutItem = "";
+
+        List<CheckoutItem> checkoutItemList = checkout.getCheckoutItems();
+        for (CheckoutItem checkoutItem : checkoutItemList) {
+            listCheckoutItem += "<tr>\n" +
+                    "<td>" +
+                    getNameVersion(checkoutItem.getVersion()) +
+                    "VNĐ</td>\n" +
+                    "<td>" + checkoutItem.getQuantity() + "</td>\n" +
+                    "<td>" + checkoutItem.getVersion().getPrice() + " VNĐ</td>\n" +
+                    "</tr>";
+        }
+        map.put("checkoutItem", listCheckoutItem);
+        map.put("total", checkout.getTotal());
+
+        String paymentMethod = checkout.getPaymentMethod() == 0 ? "Thanh toán khi nhận hàng" : "Thanh toán paypal";
+        map.put("paymentMethod", paymentMethod);
+
+        Coupon coupon = checkout.getCoupon();
+        String coupomStr = "";
+        if (coupon != null) {
+            coupomStr = coupon.getPercent() + "%";
+        } else {
+            coupomStr = "Không có";
+        }
+        map.put("coupon", coupomStr);
+
+        map.put("finalPrice", checkout.getFinalprice());
+
+        User user = checkout.getUser();
+
+        map.put("name", user.getFirstname() + " " + user.getLastname());
+
+        map.put("address", checkout.getAddress());
+        map.put("phone", checkout.getPhone());
+        map.put("mail", checkout.getEmail());
+
         String rs = StringUtils.format(content, map);
         return rs;
+    }
+
+    private String getNameVersion(Version version) {
+        return version.getProduct().getName() + " phiên bản " + version.getName();
     }
 
     public void send(Checkout checkout) {
@@ -79,7 +125,7 @@ public class MailUtils {
     }
 
     private void sendHtml(Checkout checkout) throws AddressException, MessagingException {
-        if(this.content == null){
+        if (this.content == null) {
             this.content = this.contentFile();
         }
 
@@ -87,7 +133,6 @@ public class MailUtils {
         mailMessage = new MimeMessage(getMailSession);
 
         mailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(checkout.getEmail()));
-
 
 
         mailMessage.setSubject("Trạng thái đơn hàng - Perfume", "utf-8");

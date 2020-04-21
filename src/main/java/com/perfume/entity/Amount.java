@@ -1,5 +1,6 @@
 package com.perfume.entity;
 
+import com.nmhung.anotation.QueryField;
 import com.nmhung.anotation.TableName;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,11 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @TableName
 public class Amount extends BaseEntity {
+
+    @QueryField
     public String name;
+
+    @QueryField
     public String description;
 
     @OneToMany(mappedBy = "amount")

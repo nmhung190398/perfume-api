@@ -17,6 +17,7 @@ public class ProductDTO extends BaseDTO {
     public Date EXP;
     public String image;
     public String description;
+    public Integer year;
     public CategoryDTO category = new CategoryDTO();
 
     public List<VersionDTO> versions = new ArrayList<>();

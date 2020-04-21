@@ -34,6 +34,9 @@ public class ProductSearch {
     @QueryField
     public String description;
 
+    @QueryField
+    public Integer year;
+
     @QueryField(name = "category.id")
     public Long categoryId;
 
