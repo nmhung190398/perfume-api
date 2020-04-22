@@ -1,11 +1,7 @@
 package com.perfume.controller;
 
 import com.perfume.constant.CheckoutStatus;
-import com.perfume.constant.StatusEnum;
-import com.perfume.dto.CheckoutDTO;
-import com.perfume.dto.PagingDTO;
-import com.perfume.dto.ResponseMsg;
-import com.perfume.dto.ResponsePaging;
+import com.perfume.dto.*;
 import com.perfume.dto.mapper.CheckoutMapper;
 import com.perfume.entity.*;
 import com.perfume.repository.*;
@@ -15,18 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.persistence.Tuple;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -194,6 +187,54 @@ public class CheckoutController {
         return ResponseEntity.ok(new ResponsePaging<>(producers, pagingDTO));
     }
 
+    @GetMapping("/chart")
+    public ResponseEntity<List<ChartDTO>> getChart(@RequestParam MultiValueMap<String, String> map) {
+        List<Tuple> dtos = checkoutRepository.getChart(map);
+        List<ChartDTO> chartDTOList = new ArrayList<>();
+        if (Objects.requireNonNull(map.getFirst("type")).equalsIgnoreCase("week")) {
+            int j = 0;
+            for (int i=0; i<dtos.size(); i++) {
+                while (j<7) {
+                    if (Integer.parseInt(dtos.get(i).get("label").toString()) == j) {
+                        ChartDTO chartDTO = new ChartDTO(
+                                Integer.parseInt(dtos.get(i).get("count").toString()),
+                                Double.parseDouble(dtos.get(i).get("value").toString()),
+                                Integer.parseInt(dtos.get(i).get("label").toString())
+                        );
+                        chartDTOList.add(chartDTO);
+                        j++;
+                        if (i!=dtos.size()-1) break;
+                    } else if(j<Integer.parseInt(dtos.get(i).get("label").toString()) || i==dtos.size()-1) {
+                        ChartDTO chartDTO = new ChartDTO(0, (double) 0, j);
+                        chartDTOList.add(chartDTO);
+                        j++;
+                    }
+                }
+            }
+        }
+        if (Objects.requireNonNull(map.getFirst("type")).equalsIgnoreCase("month")) {
+            int j = 1;
+            for (int i=0; i<dtos.size(); i++) {
+                while (j<13) {
+                    if (Integer.parseInt(dtos.get(i).get("label").toString()) == j) {
+                        ChartDTO chartDTO = new ChartDTO(
+                                Integer.parseInt(dtos.get(i).get("count").toString()),
+                                Double.parseDouble(dtos.get(i).get("value").toString()),
+                                Integer.parseInt(dtos.get(i).get("label").toString())
+                        );
+                        chartDTOList.add(chartDTO);
+                        j++;
+                        if (i!=dtos.size()-1) break;
+                    } else if(j<Integer.parseInt(dtos.get(i).get("label").toString()) || i==dtos.size()-1) {
+                        ChartDTO chartDTO = new ChartDTO(0, (double) 0, j);
+                        chartDTOList.add(chartDTO);
+                        j++;
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok().body(chartDTOList);
+    }
 
     private void updateTotalSold(List<CheckoutItem> checkoutItems) {
         Map<Long, Integer> data = new HashMap<>();

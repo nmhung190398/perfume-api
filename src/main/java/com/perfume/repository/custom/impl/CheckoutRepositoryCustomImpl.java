@@ -4,9 +4,13 @@ import com.perfume.entity.Checkout;
 import com.perfume.entity.User;
 import com.perfume.repository.custom.CheckoutRepositoryCustom;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.MultiValueMap;
 
+import javax.persistence.Query;
+import javax.persistence.Tuple;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout> implements CheckoutRepositoryCustom {
@@ -40,5 +44,39 @@ public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout>
         });
 
         return sql.toString();
+    }
+
+    @Override
+    public List<Tuple> getChart(MultiValueMap<String, String> map) {
+        String type;
+        Integer status;
+        String sql = "";
+        try {
+            type = map.getFirst("type");
+            status = Integer.parseInt(Objects.requireNonNull(map.getFirst("status")));
+        } catch (Exception e) {
+            return null;
+        }
+        if (type==null) return null;
+        if (type.equalsIgnoreCase("week")) {
+            sql = "SELECT count(*) as count, sum(finalprice) as value," +
+                    " WEEKDAY(created_at) as label FROM checkout" +
+                    " WHERE status = :status and" +
+                    " WEEKOFYEAR(created_at) = WEEKOFYEAR(NOW()) and" +
+                    " MONTH(created_at) = MONTH(NOW()) and" +
+                    " YEAR(created_at) = YEAR(NOW())" +
+                    " GROUP BY WEEKDAY(created_at) ORDER BY label ASC";
+        } else if (type.equalsIgnoreCase("month")) {
+            sql = "SELECT count(*) as count, sum(finalprice) as value," +
+                    " MONTH(created_at) as label FROM checkout" +
+                    " WHERE status = :status and" +
+                    " YEAR(created_at) = YEAR(NOW())" +
+                    " GROUP BY MONTH(created_at) ORDER BY label ASC";
+        } else {
+            return null;
+        }
+        Query query = this.entityManager.createNativeQuery(sql, Tuple.class);
+        query.setParameter("status", status);
+        return query.getResultList();
     }
 }
