@@ -69,6 +69,7 @@ public class UserController {
         if (!user.isPresent()) {
             throw new ValidationException("user does not exist");
         }
+        User userSave = user.get();
         if (body.image != null) {
             String imageUrl = uploadFileUtil.upload(body.getImage(), prefix + body.getUsername());
             if (imageUrl.equals("")) {
@@ -77,10 +78,14 @@ public class UserController {
                 return ResponseEntity.ok(responseMsg);
             }
             body.setImage(imageUrl);
+            userSave.setImage(body.getImage());
         }
-        body.setStatus(null);
-        body.setId(id);
-        userRepository.update(body);
+        userSave.setFirstname(body.getFirstname());
+        userSave.setLastname(body.getLastname());
+        userSave.setAddress(body.getAddress());
+        userSave.setPhone(body.getPhone());
+        userSave.setRoles(body.getRoles());
+        userRepository.save(userSave);
         return ResponseEntity.ok(responseMsg);
     }
 

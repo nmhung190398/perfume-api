@@ -18,6 +18,7 @@ public class ProductDTO extends BaseDTO {
     public String image;
     public String description;
     public Integer year;
+    public Integer totalSold;
     public CategoryDTO category = new CategoryDTO();
 
     public List<VersionDTO> versions = new ArrayList<>();

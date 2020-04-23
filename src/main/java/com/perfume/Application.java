@@ -70,10 +70,10 @@ public class Application implements CommandLineRunner {
         User user = new User();
         user.setUsername("admin");
         user.setPassword(new BCryptPasswordEncoder().encode("123456"));
-        user.setAddress("Thái Nguyên");
-        user.setEmail("nmhung190398@gmail.com");
-        user.setFirstname("hung");
-        user.setFirstname("nguyen");
+        user.setAddress("Hà nội");
+        user.setEmail("admin@gmail.com");
+        user.setFirstname("admin");
+        user.setFirstname("admin");
         user.setStatus(StatusEnum.ACTIVE.getValue());
 
         List<Target> targets = Arrays.asList(
