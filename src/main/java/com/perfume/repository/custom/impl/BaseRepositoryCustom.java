@@ -41,6 +41,15 @@ public class BaseRepositoryCustom<E extends BaseEntity> extends BaseDAO<E> imple
         super(asName);
 //        this.asName = asName;
     }
+    public BaseRepositoryCustom(String asName,boolean isDistinct ) {
+        super(asName);
+        if(isDistinct){
+            this.fistQuery = String.join(" ", "SELECT distinct ", asName, "FROM", this.nameTable, asName, " ");
+            this.fistQueryCount = String.join(" ", "SELECT", "COUNT( distinct ", asName, ")", "FROM", this.nameTable, asName, " ");
+        }
+
+//        this.asName = asName;
+    }
 
 
     private Map<String, Object> toMap(MultiValueMap<String, Object> multiValueMap) {
