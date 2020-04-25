@@ -19,6 +19,16 @@ public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout>
     }
 
     @Override
+    public Map<String, Object> converEntityToMapQuery(Object e) {
+        Checkout checkout = (Checkout) e;
+        Map<String, Object> map = super.converEntityToMapQuery(checkout);
+        if (checkout.getDescription() != null) {
+            map.put("search", checkout.getDescription());
+        }
+        return map;
+    }
+
+    @Override
     public String createWhereQuery(Map<String, Object> queryParams, Map<String, Object> values) {
         StringBuilder sql = new StringBuilder(" where 1 = 1 ");
         List<String> queryByClass = this.getQueryParamByClass(this.searchType);
@@ -26,16 +36,16 @@ public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout>
             if (queryParams.containsKey(item)) {
                 String tmp = item.replace(".", "");
 
-                if(item.equalsIgnoreCase("user.id")){
+                if (item.equalsIgnoreCase("user.id")) {
                     User user = (User) queryParams.get(item);
                     sql.append(" and " + this.asName + "." + item);
-                    if(user.getId() == null){
-                        sql.append( " is null");
-                    }else{
+                    if (user.getId() == null) {
+                        sql.append(" is null");
+                    } else {
                         sql.append(" = :" + tmp);
-                        values.put(tmp,user.getId());
+                        values.put(tmp, user.getId());
                     }
-                }else{
+                } else {
                     sql.append(" and " + this.asName + "." + item + " = :" + tmp);
                     values.put(tmp, queryParams.get(item));
                 }
@@ -43,6 +53,25 @@ public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout>
 
         });
 
+        if (queryParams.containsKey("search")) {
+            sql.append(" AND ( ");
+            String search = (String) queryParams.get("search");
+            sql.append(" lower(CO.firstname) like lower(:searchfirstname) ");
+            values.put("searchfirstname", "%" + search + "%");
+
+            sql.append(" OR lower(CO.lastname) like lower(:searchlastname) ");
+            values.put("searchlastname", "%" + search + "%");
+
+            sql.append(" OR lower(CO.phone) like lower(:searchphone) ");
+            values.put("searchphone", "%" + search + "%");
+
+            sql.append(" OR lower(CO.email) like lower(:searchemail) ");
+            values.put("searchemail", "%" + search + "%");
+
+            sql.append(" OR lower(CO.address) like lower(:searchaddress) ");
+            values.put("searchaddress", "%" + search + "%");
+            sql.append(" )");
+        }
         return sql.toString();
     }
 
@@ -57,7 +86,7 @@ public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout>
         } catch (Exception e) {
             return null;
         }
-        if (type==null) return null;
+        if (type == null) return null;
         if (type.equalsIgnoreCase("week")) {
             sql = "SELECT count(*) as count, sum(finalprice) as value," +
                     " WEEKDAY(created_at) as label FROM checkout" +
