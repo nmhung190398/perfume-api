@@ -11,7 +11,7 @@ public class CheckoutItemDTO extends BaseDTO {
 
     public Long userId;
 
-    public Long productId;
+    public VersionDTO version;
 
     public int quantity;
 
