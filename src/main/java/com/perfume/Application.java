@@ -5,10 +5,7 @@ import com.perfume.constant.StatusEnum;
 import com.perfume.constant.TargetEnum;
 import com.perfume.dto.mapper.UserMapper;
 import com.perfume.entity.*;
-import com.perfume.repository.ProductRepository;
-import com.perfume.repository.RoleRepository;
-import com.perfume.repository.TargetRepository;
-import com.perfume.repository.UserRepository;
+import com.perfume.repository.*;
 import com.perfume.util.MailUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +22,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +55,9 @@ public class Application implements CommandLineRunner {
 
     @Autowired
     MailUtils mailUtils;
+
+    @Autowired
+    DisplayStaticRepository displayStaticRepository;
 
 
     @Override
@@ -108,7 +109,7 @@ public class Application implements CommandLineRunner {
             userRepository.save(user);
         }
 
-        testMapper();
+        addDisplayStatic();
 
     }
 
@@ -123,39 +124,18 @@ public class Application implements CommandLineRunner {
 
     }
 
-    public void testMapper() {
-//        Product product = Product.builder().categoryId(1L).build();
-//        List<Product> list = productRepository.find(product);
-//        User user = User.builder().username("admin").password(new BCryptPasswordEncoder().encode("123456"))
-//                .address("Thái Nguyên").email("nmhung190398@gmail.com").firstname("hung").lastname("nguyen")
-//                .build();
-//        user.setId(1L);
-        MultiValueMap<String, Object> queryParams = new LinkedMultiValueMap<String, Object>();
-////        queryParams.add("id",1L);
-//        List<User> users = null;
-//        users = userRepository.find(user);
-////        List<User> users = userRepository.filter(queryParams,null);
-//        UserDTO userDTO = userMapper.toDTO(users.get(0));
-//        System.out.println(users.get(0).getUsername());ull
-        queryParams.add("id", "1");
 
-        List<Target> targets = targetRepository.filter(new LinkedMultiValueMap<>());
-//        Long cout = targetRepository.count(new LinkedMultiValueMap<>());
-//        Page<Target> targetPage = targetRepository.filterPage(new LinkedMultiValueMap<>(),PageRequest.of(1,2));
-
-        System.out.println("");
+//    @PostConstruct
+    public void addDisplayStatic() {
+        for (DisplayStatic.DisplayStaticType displayStaticType : DisplayStatic.DisplayStaticType.values()) {
+            if (!displayStaticRepository.existsByType(displayStaticType.value())) {
+                DisplayStatic displayStatic = new DisplayStatic();
+                displayStatic.setContent("");
+                displayStatic.setType(displayStaticType.value());
+                displayStaticRepository.save(displayStatic);
+            }
+        }
     }
-//
-//    @Bean
-//    public WebMvcConfigurer corsConfigurer() {
-//        return new WebMvcConfigurer() {
-//            @Override
-//            public void addCorsMappings(CorsRegistry registry) {
-//                registry.addMapping("/**")
-//                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-//                        .allowedOrigins("*").maxAge(3600).allowedHeaders("*");
-//            }
-//        };
-//    }
+
 
 }
