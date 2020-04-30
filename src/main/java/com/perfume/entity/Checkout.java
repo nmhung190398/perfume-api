@@ -73,6 +73,13 @@ public class Checkout extends BaseEntity {
 
     public String description;
 
+    @Transient
+    private String search;
+
+    @Transient
+    private Boolean isCoupon;
+
+
     public Checkout() {
     }
 

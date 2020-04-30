@@ -126,10 +126,12 @@ public class CheckoutController {
                 Coupon coupon = couponRepository.getByCodeValidate(codeCoupon);
                 if (coupon == null) {
                     responseMsg.setStatus(400);
-                    responseMsg.setMsg("Mã giảm giả không phù hợp");
-                    return ResponseEntity.status(responseMsg.getStatus()).body(responseMsg);
+                    responseMsg.setMsg("Mã giảm giá đã được sử dụng hoặc hết hạn");
+                    return ResponseEntity.ok(responseMsg);
                 } else {
                     checkout.setCoupon(coupon);
+                    coupon.setTotal(coupon.getTotal() - 1);
+                    couponRepository.save(coupon);
                 }
             }
         }

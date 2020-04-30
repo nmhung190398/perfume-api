@@ -22,8 +22,14 @@ public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout>
     public Map<String, Object> converEntityToMapQuery(Object e) {
         Checkout checkout = (Checkout) e;
         Map<String, Object> map = super.converEntityToMapQuery(checkout);
-        if (checkout.getDescription() != null) {
-            map.put("search", checkout.getDescription());
+        if (checkout.getSearch() != null) {
+            if (!checkout.getSearch().trim().equalsIgnoreCase("")) {
+                map.put("search", checkout.getSearch().trim());
+            }
+        }
+
+        if (checkout.getIsCoupon() != null) {
+            map.put("isCoupon", checkout.getIsCoupon());
         }
         return map;
     }
@@ -52,6 +58,10 @@ public class CheckoutRepositoryCustomImpl extends BaseRepositoryCustom<Checkout>
             }
 
         });
+        if (queryParams.containsKey("isCoupon")) {
+            Boolean isCoupon = (Boolean) queryParams.get("isCoupon");
+            sql.append(" AND CO.coupon.id IS ").append(isCoupon ? " NOT " : " ").append(" NULL ");
+        }
 
         if (queryParams.containsKey("search")) {
             sql.append(" AND ( ");
