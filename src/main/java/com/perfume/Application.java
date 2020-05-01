@@ -62,10 +62,10 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+//        addDataDefulat();
+    }
 
-
-//        this.sendMail();
-
+    public void addDataDefulat() {
         // Khi chương trình chạy
 //         Insert vào csdl một user.
         User user = new User();
@@ -110,7 +110,6 @@ public class Application implements CommandLineRunner {
         }
 
         addDisplayStatic();
-
     }
 
     public void sendMail() {
@@ -125,7 +124,7 @@ public class Application implements CommandLineRunner {
     }
 
 
-//    @PostConstruct
+    //    @PostConstruct
     public void addDisplayStatic() {
         for (DisplayStatic.DisplayStaticType displayStaticType : DisplayStatic.DisplayStaticType.values()) {
             if (!displayStaticRepository.existsByType(displayStaticType.value())) {
