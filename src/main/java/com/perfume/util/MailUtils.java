@@ -61,7 +61,7 @@ public class MailUtils {
     private String setData(Checkout checkout) {
         Map<String, String> map = new HashMap<>();
         String status = CheckoutStatus.getCheckoutStatus(checkout.getStatus()).toString();
-
+        map.put("id", checkout.getId().toString());
         map.put("status", status);
 
         String note = checkout.getNote();
@@ -97,10 +97,7 @@ public class MailUtils {
 
         map.put("finalPrice", checkout.getFinalprice());
 
-        User user = checkout.getUser();
-
-        map.put("name", user.getFirstname() + " " + user.getLastname());
-
+        map.put("name", checkout.getFirstname() + " " + checkout.getLastname());
         map.put("address", checkout.getAddress());
         map.put("phone", checkout.getPhone());
         map.put("mail", checkout.getEmail());

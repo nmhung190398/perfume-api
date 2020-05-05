@@ -32,6 +32,8 @@ public class CheckoutDTO extends BaseDTO {
 
     private Integer districtId;
 
+    public String description;
+
     private Integer wardId;
     private String note;
     private Integer status;

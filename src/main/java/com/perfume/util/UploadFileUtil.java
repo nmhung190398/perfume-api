@@ -43,25 +43,30 @@ public class UploadFileUtil {
 //        }
     }
 
-    public String saveFile(String base64Image, String fileName) {
+    public String getExtension(String base64Image) {
         byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
         InputStream is = new ByteArrayInputStream(decodedBytes);
-
-        //Find out image type
         String fileExtension = ".jpeg";
         try {
             String mimeType = URLConnection.guessContentTypeFromStream(is); //mimeType is something like "image/jpeg"
-            String delimiter="[/]";
+            String delimiter = "[/]";
             String[] tokens = mimeType.split(delimiter);
             fileExtension = "." + tokens[1];
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        return fileExtension;
+    }
+
+    public String saveFile(String base64Image, String fileName) {
+        byte[] decodedBytes = Base64.getDecoder().decode(base64Image);
+        //Find out image type
+        String fileExtension = getExtension(base64Image);
 
         fileName += fileExtension;
         String filePath = getFilePath(uploadFolder, fileName);
         File file = new File(uploadFolder);
-        if(!file.exists()){
+        if (!file.exists()) {
             file.mkdirs();
         }
         try {
@@ -84,7 +89,7 @@ public class UploadFileUtil {
         try {
             Path filePath = fileStorageLocation.resolve(filePathAbsolute).normalize();
             Resource resource = new UrlResource(filePath.toUri());
-            if(resource.exists()) {
+            if (resource.exists()) {
                 return resource;
             } else {
                 System.out.println("File not found " + fileName);

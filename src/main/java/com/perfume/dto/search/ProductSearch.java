@@ -61,4 +61,6 @@ public class ProductSearch {
     public Long versionId;
 
     public OderBy oderBy;
+
+    public Long[] targetIds;
 }

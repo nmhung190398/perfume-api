@@ -15,18 +15,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.MultiValueMap;
 
 import javax.persistence.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> implements ProductRepositoryCustom {
 
     public ProductRepositoryCustomImpl() {
-        super("P");
+        super("P", true);
 //        this.fistQuery = "SELECT P, SUM(P.id) as avgPrice FROM Product P ";
     }
 
     private String asCategory = "Category";
+    private String asTarget = "Target";
 
     @Override
     public Page<Product> getAll(Pageable pageable) {
@@ -64,6 +63,10 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
     public String createJoinQuery(Map<String, Object> queryParams, Map<String, Object> values) {
         String sql = super.createJoinQuery(queryParams, values);
         sql += " JOIN P.category as " + asCategory + " ";
+
+        if (queryParams.containsKey("targetIds")) {
+            sql += " JOIN P.targets as " + asTarget + " ";
+        }
         return sql;
     }
 
@@ -72,6 +75,12 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
         ProductSearch productSearch = (ProductSearch) e;
         Map<String, Object> map = super.converEntityToMapQuery(productSearch);
 
+        if (productSearch.getTargetIds() != null) {
+            if (productSearch.getTargetIds().length > 0) {
+                map.put("targetIds", productSearch.getTargetIds());
+            }
+
+        }
 
         if (productSearch.getMaxPrice() != null) {
             map.put("maxPrice", productSearch.getMaxPrice());
@@ -100,14 +109,14 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
         if (queryParams.get("oderBy") != null) {
             OderBy oderBy = (OderBy) queryParams.get("oderBy");
             String sql = " order by";
-            if(oderBy.getName() != null){
+            if (oderBy.getName() != null) {
                 String name = oderBy.getName();
-                if(name.equalsIgnoreCase("price")){
+                if (name.equalsIgnoreCase("price")) {
                     sql += " P.avgPrice ";
-                    sql += oderBy.getType() != null? oderBy.getType() + " " : " ";
-                }else if(name.equalsIgnoreCase("countCheckoutItem")){
+                    sql += oderBy.getType() != null ? oderBy.getType() + " " : " ";
+                } else if (name.equalsIgnoreCase("countCheckoutItem")) {
                     sql += " P.totalSold ";
-                    sql += oderBy.getType() != null? oderBy.getType() + " " : " ";
+                    sql += oderBy.getType() != null ? oderBy.getType() + " " : " ";
                 }
                 return sql;
             }
@@ -145,6 +154,14 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
         if (queryParams.get("versionId") != null) {
             sql += " AND " + asName + ".id IN ( SELECT distinct V.product.id FROM Version V WHERE V.id = :versionId ) ";
             values.put("versionId", queryParams.get("versionId"));
+        }
+
+        if (queryParams.containsKey("targetIds")) {
+            Long[] targetIds = (Long[]) queryParams.get("targetIds");
+            for (int i = 0; i < 1; ++i) {
+                sql += " AND " + asTarget + ".id = :targetIds" + i + " ";
+                values.put("targetIds" + i, targetIds[i]);
+            }
         }
 //        if (queryParams.get("magiamgiaId") != null) {
 //            sql += " AND " + asCategory + ".code = :categoryCode ";
