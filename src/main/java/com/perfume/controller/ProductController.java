@@ -118,9 +118,12 @@ public class ProductController {
 
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
-        productRepository.changeStatus(id, StatusEnum.DELETED.getValue());
-        return ResponseEntity.ok("Delete Success");
+    public ResponseEntity<ResponseMsg> delete(@PathVariable Long id) {
+        ProductSearch productSearch = new ProductSearch();
+        productSearch.setStatus(StatusEnum.DELETED.getValue());
+        productSearch.setId(id);
+        productRepository.update(productSearch);
+        return ResponseEntity.ok(new ResponseMsg(productSearch, 200, "Delete success"));
     }
 
     @GetMapping("")
