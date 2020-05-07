@@ -117,6 +117,8 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
                 } else if (name.equalsIgnoreCase("countCheckoutItem")) {
                     sql += " P.totalSold ";
                     sql += oderBy.getType() != null ? oderBy.getType() + " " : " ";
+                } else if (name.equalsIgnoreCase("random")) {
+                    sql += " RAND() ";
                 }
                 return sql;
             }
