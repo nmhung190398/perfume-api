@@ -4,6 +4,7 @@ import com.perfume.constant.RoleEnum;
 import com.perfume.constant.StatusEnum;
 import com.perfume.constant.TargetEnum;
 import com.perfume.dto.mapper.UserMapper;
+import com.perfume.dto.search.ProductSearch;
 import com.perfume.entity.*;
 import com.perfume.repository.*;
 import com.perfume.util.MailUtils;
@@ -62,7 +63,13 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-//        addDataDefulat();
+//        ProductSearch productSearch = new ProductSearch();
+
+//        List<Product> products = productRepository.find(productSearch);
+
+
+        System.out.println();
+        //        addDataDefulat();
     }
 
     public void addDataDefulat() {

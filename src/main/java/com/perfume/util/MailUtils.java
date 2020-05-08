@@ -121,6 +121,37 @@ public class MailUtils {
         thread.start();
     }
 
+    public void sendTokenResetPassword(String email, String token) {
+        Thread thread = new Thread(() -> {
+            try {
+                this.runSendTokenResetPassword(email, token);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+    }
+
+    private void runSendTokenResetPassword(String email, String token) throws MessagingException {
+        getMailSession = Session.getDefaultInstance(mailServerProperties, null);
+        mailMessage = new MimeMessage(getMailSession);
+
+        mailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+
+
+        mailMessage.setSubject("Lấy lại mật khẩu - Perfume", "utf-8");
+
+        String content = "<a href='http://localhost:3200/confirm-account?token=" + token + "'>http://localhost:3200/confirm-account?token=" + token + "</a>";
+
+        mailMessage.setContent(content, "text/html; charset=utf-8");
+
+        Transport transport = getMailSession.getTransport("smtp");
+
+        transport.connect("smtp.gmail.com", APP_EMAIL, APP_PASSWORD);
+        transport.sendMessage(mailMessage, mailMessage.getAllRecipients());
+        transport.close();
+    }
+
     private void sendHtml(Checkout checkout) throws AddressException, MessagingException {
         if (this.content == null) {
             this.content = this.contentFile();
