@@ -63,4 +63,6 @@ public class ProductSearch {
     public OderBy oderBy;
 
     public Long[] targetIds;
+
+    private String search;
 }

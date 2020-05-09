@@ -195,8 +195,8 @@ public class CheckoutController {
         List<ChartDTO> chartDTOList = new ArrayList<>();
         if (Objects.requireNonNull(map.getFirst("type")).equalsIgnoreCase("week")) {
             int j = 0;
-            for (int i=0; i<dtos.size(); i++) {
-                while (j<7) {
+            for (int i = 0; i < dtos.size(); i++) {
+                while (j < 7) {
                     if (Integer.parseInt(dtos.get(i).get("label").toString()) == j) {
                         ChartDTO chartDTO = new ChartDTO(
                                 Integer.parseInt(dtos.get(i).get("count").toString()),
@@ -205,8 +205,8 @@ public class CheckoutController {
                         );
                         chartDTOList.add(chartDTO);
                         j++;
-                        if (i!=dtos.size()-1) break;
-                    } else if(j<Integer.parseInt(dtos.get(i).get("label").toString()) || i==dtos.size()-1) {
+                        if (i != dtos.size() - 1) break;
+                    } else if (j < Integer.parseInt(dtos.get(i).get("label").toString()) || i == dtos.size() - 1) {
                         ChartDTO chartDTO = new ChartDTO(0, (double) 0, j);
                         chartDTOList.add(chartDTO);
                         j++;
@@ -216,8 +216,8 @@ public class CheckoutController {
         }
         if (Objects.requireNonNull(map.getFirst("type")).equalsIgnoreCase("month")) {
             int j = 1;
-            for (int i=0; i<dtos.size(); i++) {
-                while (j<13) {
+            for (int i = 0; i < dtos.size(); i++) {
+                while (j < 13) {
                     if (Integer.parseInt(dtos.get(i).get("label").toString()) == j) {
                         ChartDTO chartDTO = new ChartDTO(
                                 Integer.parseInt(dtos.get(i).get("count").toString()),
@@ -226,8 +226,8 @@ public class CheckoutController {
                         );
                         chartDTOList.add(chartDTO);
                         j++;
-                        if (i!=dtos.size()-1) break;
-                    } else if(j<Integer.parseInt(dtos.get(i).get("label").toString()) || i==dtos.size()-1) {
+                        if (i != dtos.size() - 1) break;
+                    } else if (j < Integer.parseInt(dtos.get(i).get("label").toString()) || i == dtos.size() - 1) {
                         ChartDTO chartDTO = new ChartDTO(0, (double) 0, j);
                         chartDTOList.add(chartDTO);
                         j++;
@@ -243,23 +243,25 @@ public class CheckoutController {
         List<Version> versions = new ArrayList<>();
         checkoutItems.forEach(item -> {
 
-            Version version = item.getVersion();
+            Version version = versionRepository.findById(item.getVersion().getId()).get();
             Integer totalSoldVersion = version.getTotalSold();
             totalSoldVersion = totalSoldVersion == null ? 0 : totalSoldVersion;
 
 
-
-
             Long idProduct = version.getProduct().getId();
             Integer quantity = item.quantity;
-            version.setTotalSold(totalSoldVersion + item.quantity);
+
             if (data.containsKey(idProduct)) {
                 quantity += data.get(idProduct);
             }
-            versions.add(version);
-            data.put(idProduct, quantity);
-        });
 
+            data.put(idProduct, quantity);
+
+
+            //update total version
+            version.setTotalSold(totalSoldVersion + item.quantity);
+            versionRepository.save(version);
+        });
 
 
         List<Product> list = productRepository.findAllById(data.keySet());
@@ -272,7 +274,7 @@ public class CheckoutController {
             item.setTotalSold(totalSold);
         });
         productRepository.saveAll(list);
-        versionRepository.saveAll(versions);
+
     }
 
 }

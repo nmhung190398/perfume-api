@@ -101,6 +101,9 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
         if (productSearch.getOderBy() != null) {
             map.put("oderBy", productSearch.getOderBy());
         }
+        if (productSearch.getSearch() != null) {
+            map.put("search", productSearch.getSearch());
+        }
         return map;
     }
 
@@ -138,6 +141,10 @@ public class ProductRepositoryCustomImpl extends BaseRepositoryCustom<Product> i
         if (queryParams.get("minPrice") != null) {
             sql += " AND " + asName + ".id IN ( SELECT distinct V.product.id FROM Version V WHERE V.price >= :minPrice ) ";
             values.put("minPrice", queryParams.get("minPrice"));
+        }
+        if (queryParams.containsKey("search")) {
+            sql += " AND upper(" + asName + ".name) like upper(:searchName) ";
+            values.put("searchName", "%" + queryParams.get("search") + "%");
         }
 
         if (queryParams.get("highlights") != null) {

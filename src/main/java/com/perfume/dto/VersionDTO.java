@@ -14,6 +14,7 @@ public class VersionDTO {
     public long price;
     public int total;
     public Long productId;
+    public Integer totalSold;
 //    public ProductDTO product;
 
 
